@@ -1,0 +1,376 @@
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #d2001a, #7462ff, #f48e21, #23d5ab);
+  background-size: 300% 300%;
+  animation: color 12s ease-in-out infinite;
+}
+
+/*Background color animation*/
+@keyframes color {
+  0% {
+    background-position: 0 50%;
+  }
+
+  50% {
+    background-position: 0 50%;
+  }
+
+  70% {
+    background-position: 0 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+header {
+  width: 100%;
+  width: 100vw;
+  max-width: 100%;
+  min-width: 100%;
+  text-align: center;
+  padding: 1rem;
+  background: #222;
+  color: #fff;
+  z-index: 1000;
+  height: 102px;
+}
+
+.menu {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  /* fully flush to the edge */
+  z-index: 1000;
+}
+
+.menu-button {
+  background-color: #222;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 0 8px 8px 0;
+  /* only right side rounded */
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+  user-select: none;
+}
+
+.menu-button:hover {
+  background-color: #333;
+  transform: scale(1.05);
+}
+
+.menu-content {
+  display: flex;
+  flex-direction: column;
+  background-color: #222;
+  /* same as header */
+  border: 3px solid #555;
+  /* slightly thicker border */
+  border-top: none;
+  /* REMOVE TOP BORDER */
+  border-right: 1px solid #222;
+  /* right border thinner */
+  border-left: 1px solid #222;
+  /* right border thinner */
+  border-radius: 0 0 8px 8px;
+  /* Only bottom corners rounded */
+  overflow: hidden;
+  position: absolute;
+  top: 71px;
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  /* <- move up when hidden */
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  /* subtle shadow ONLY at sides and bottom */
+}
+
+@keyframes menuSlideBounce {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translateY(10px);
+    opacity: 1;
+  }
+
+  80% {
+    transform: translateY(-5px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes menuSlideBounceUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  20% {
+    transform: translateY(-5px);
+  }
+
+  50% {
+    transform: translateY(10px);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+}
+
+.menu-content a {
+  text-decoration: none;
+  color: #eee;
+  padding: 20px 20px;
+  font-weight: bold;
+  display: flex;
+  /* Make icon + text side by side */
+  /*flex-direction: column;    
+   Stack vertically */
+  align-items: center;
+  /* Center horizontally */
+  justify-content: center;
+  /* Center vertically */
+  gap: 10px;
+  /* Space between icon and text */
+  transition: background 0.3s;
+}
+
+.menu-content a:hover {
+  background-color: #333;
+}
+
+.menu-content .icon {
+  font-size: 1.5rem;
+}
+
+.menu-content .text {
+  font-size: 1.1rem;
+}
+
+.menu.open .menu-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  animation: menuSlideBounce 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+}
+
+/* Rotate the menu button when open */
+.menu.open .menu-button {
+  transform: rotate(90deg);
+}
+
+.menu-button::before {
+  content: "☰";
+  display: inline-block;
+  transition: transform 0.4s, content 0.4s;
+  transform: rotate(0deg);
+  /* Start not rotated */
+}
+
+
+.menu.open .menu-button::before {
+  content: "✖";
+  /* Becomes 'x' when menu is open */
+  transform: rotate(180deg);
+}
+
+/*End of Menu Bar*/
+
+/* Main container: a large rounded rectangle */
+.container {
+  position: relative;
+  margin: 50px auto;
+  width: 900px;
+  height: 500px;
+  background-color: #007bff42;
+  /* Light purple or any color you like */
+  border: 5px solid #dadadad0;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* "Artificial Intelligence" clickable heading */
+.ai-title {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  font-size: 3.0rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.ai-title:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+  filter: brightness(1.22);
+  /* darkens by 10% on hover */
+}
+
+
+
+/* Common Box (Rectangle) styling */
+.box {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 10px;
+  transition: transform 0.2s, opacity 0.2s;
+  text-decoration: none;
+  /* For the <a> boxes so they look like boxes not links */
+}
+
+.box:hover {
+  opacity: 0.9;
+  transform: scale(1.07);
+  filter: brightness(1.3);
+}
+
+
+/* Knowledge Representation & Reasoning (Orange) */
+.kr {
+  top: 110px;
+  left: 30px;
+  width: 280px;
+  height: 170px;
+  border-radius: 20px;
+  font-size: 2.2rem;
+  background-color: #ffa723;
+  /* Orange */
+  border: 4px solid #ffffffd0;
+}
+
+/* Computer Vision (Black) */
+.cv {
+  top: 80px;
+  left: 325px;
+  width: 280px;
+  height: 140px;
+  border-radius: 20px;
+  font-size: 2.2rem;
+  background-color: #333333;
+  /* Black/Gray */
+  border: 4px solid #ffffffd0;
+}
+
+/* Natural Language Processing (Yellow-ish) */
+.nlp {
+  top: 80px;
+  left: 615px;
+  width: 260px;
+  height: 140px;
+  border-radius: 20px;
+  font-size: 2.2rem;
+  background-color: #e7bc4e;
+  /* Amber/Yellow */
+  border: 4px solid #ffffffd0;
+}
+
+/* Robotics (Dark Green) */
+.robotics {
+  top: 320px;
+  left: 30px;
+  width: 270px;
+  height: 120px;
+  border-radius: 20px;
+  font-size: 2.2rem;
+  background-color: #388e3cd1;
+  /* Dark green */
+  border: 4px solid #ffffffd0;
+}
+
+/* Machine Learning (Greenish Blue) */
+.ml {
+  top: 240px;
+  left: 350px;
+  width: 525px;
+  height: 240px;
+  border-radius: 20px;
+  font-size: 2.2rem;
+  display: flex;
+  /* keep it a flex container */
+  align-items: flex-start;
+  /* vertical: stick children to the top */
+  justify-content: flex-start;
+  /* horizontal: stick children to the left */
+  padding: 20px;
+  /* give it some breathing room from the edges */
+  background-color: #44a9fbd3;
+  /* Blue-ish */
+  border: 4px solid #ffffffd0;
+}
+
+/* Deep Learning (Purple), nested inside ML */
+.dl {
+  position: absolute;
+  /* still absolute within the parent .ml container */
+  top: 310px;
+  left: 580px;
+  width: 285px;
+  height: 163px;
+  border-radius: 20px;
+  font-size: 2.2rem;
+  background-color: #b13ec5b3;
+  /* Purple */
+  transform: none;
+  /* because default .box transform transitions may conflict */
+  border: 4px solid #ffffffd0;
+}
+
+/* The tooltip (popup) in top-right corner of the .container */
+.popup {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  width: 300px;
+  background-color: #ffffff;
+  color: #333;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  display: none;
+  /* hidden by default */
+  z-index: 999;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.popup-title {
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.popup-text {
+  font-size: 1rem;
+  line-height: 1.3;
+}
