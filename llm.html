@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icons/tabIcon.png" type="image/png">
+    <title>LLMs Overview</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(-45deg, #cee2f5, #fcd7d7, #e1f5d8, #c3d4fb);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+
+        header {
+            width: 100%;
+            width: 100vw;
+            max-width: 100%;
+            min-width: 100%;
+            text-align: center;
+            padding: 1rem;
+            background: #222;
+            color: #fff;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .menu {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            /* fully flush to the edge */
+            z-index: 1000;
+        }
+
+        .menu-button {
+            background-color: #222;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 0 8px 8px 0;
+            /* only right side rounded */
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            user-select: none;
+        }
+
+        .menu-button:hover {
+            background-color: #333;
+            transform: scale(1.05);
+        }
+
+        .menu-content {
+            display: flex;
+            flex-direction: column;
+            background-color: #222;
+            /* same as header */
+            border: 3px solid #555;
+            /* slightly thicker border */
+            border-top: none;
+            /* REMOVE TOP BORDER */
+            border-right: 1px solid #222;
+            /* right border thinner */
+            border-left: 1px solid #222;
+            /* right border thinner */
+            border-radius: 0 0 8px 8px;
+            /* Only bottom corners rounded */
+            overflow: hidden;
+            position: absolute;
+            top: 71px;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px);
+            /* <- move up when hidden */
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* subtle shadow ONLY at sides and bottom */
+        }
+
+        @keyframes menuSlideBounce {
+            0% {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            60% {
+                transform: translateY(10px);
+                opacity: 1;
+            }
+
+            80% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes menuSlideBounceUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            20% {
+                transform: translateY(-5px);
+            }
+
+            50% {
+                transform: translateY(10px);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+        }
+
+        .menu-content a {
+            text-decoration: none;
+            color: #eee;
+            padding: 20px 20px;
+            font-weight: bold;
+            display: flex;
+            /* Make icon + text side by side */
+            /*flex-direction: column;    
+            Stack vertically */
+            align-items: center;
+            /* Center horizontally */
+            justify-content: center;
+            /* Center vertically */
+            gap: 10px;
+            /* Space between icon and text */
+            transition: background 0.3s;
+        }
+
+        .menu-content a:hover {
+            background-color: #333;
+        }
+
+        .menu-content .icon {
+            font-size: 1.5rem;
+        }
+
+        .menu-content .text {
+            font-size: 1.1rem;
+        }
+
+        .menu.open .menu-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            animation: menuSlideBounce 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+
+        /* Rotate the menu button when open */
+        .menu.open .menu-button {
+            transform: rotate(90deg);
+        }
+
+        .menu-button::before {
+            content: "☰";
+            display: inline-block;
+            transition: transform 0.4s, content 0.4s;
+            transform: rotate(0deg);
+            /* Start not rotated */
+        }
+
+
+        .menu.open .menu-button::before {
+            content: "✖";
+            /* Becomes 'x' when menu is open */
+            transform: rotate(180deg);
+        }
+
+        /*End of Menu Bar*/
+
+        .LLMdef {
+            margin: 1.5rem;
+        }
+
+        .AILandscape {
+            /* Fixed width */
+            width: 750px;
+            /* Fixed height */
+            height: 490px;
+            /* So circles are positioned inside */
+            position: relative;
+
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            /* Center the container */
+            margin: 0 auto;
+            /* hide overflow */
+            overflow: hidden;
+        }
+
+        .circle {
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+            font-size: 2.6rem;
+        }
+
+        .circle:hover {
+            transform: scale(1.05);
+            filter: brightness(1.15);
+        }
+
+        .popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 260px;
+            background-color: #fff;
+            color: #222;
+            border: 2px solid #aaa;
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+            font-family: sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .popup-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .popup-text {
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .tooltip:hover {
+            color: blue;
+        }
+
+        .healthcare-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .box-step {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            min-width: 180px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .circle-step {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .arrow {
+            font-size: 5rem;
+            color: #555;
+        }
+
+        .learning-comparison {
+            display: flex;
+            /* makes two blocks inline */
+            justify-content: space-around;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+            /* optional: allow stacking on small screens */
+            margin: 2rem 0;
+        }
+
+        .task-block {
+            width: 350px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .task-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .task-block ul {
+            text-align: left;
+            margin-top: 10px;
+            padding-left: 20px;
+            font-size: 1.2rem;
+        }
+
+        .LLMImprove {
+            font-size: 1.3rem;
+            display: flex;
+            /* makes two blocks inline */
+            justify-content: space-around;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+            /* optional: allow stacking on small screens */
+            margin: 2rem 0;
+        }
+
+        /* BUILDING BLOCKS OF LLMs */
+
+        #blockPopup {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: #ffffff;
+            color: #222;
+            padding: 20px 25px 80px;
+            /* extra space at bottom for buttons */
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 2000;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        /* This class will trigger animation */
+        #blockPopup.show {
+            opacity: 2;
+            transform: translateY(1);
+        }
+
+        .button-link {
+            display: inline-block;
+            margin: 2rem auto 0;
+            padding: 0.6rem 1.2rem;
+            background: #2196f3;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .button-link:hover {
+            transform: scale(1.05);
+            filter: brightness(0.75);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header section -->
+    <header style="position: relative; background: #222; color: white;">
+        <div class="menu">
+            <div class="menu-button" id="menuButton"></div>
+            <div class="menu-content" id="menuContent">
+                <a href="index.html">
+                    <span class="icon"><img src="icons/homeMenu.png" alt="Home"
+                            style="width: 60px; height: 60px;"></span>
+                    <span class="text">Home</span>
+                </a>
+                <a href="ai.html">
+                    <span class="icon"><img src="icons/aiMenu.png" alt="AI Overview"
+                            style="width: 60px; height: 60px;"></span>
+                    <span class="text">AI Overview</span>
+                </a>
+                <a href="ml.html">
+                    <span class="icon"><img src="icons/mlMenu.png" alt="Machine Learning"
+                            style="width: 60px; height: 60px;"></span>
+                    <span class="text">Machine Learning</span>
+                </a>
+                <a href="dl.html">
+                    <span class="icon"><img src="icons/dlMenu.png" alt="Deep Learning"
+                            style="width: 60px; height: 60px;"></span>
+                    <span class="text">Deep Learning</span>
+                </a>
+                <a href="llm.html">
+                    <span class="icon"><img src="icons/llmMenu.png" alt="LLMs"
+                            style="width: 60px; height: 60px;"></span>
+                    <span class="text">LLMs</span>
+                </a>
+            </div>
+        </div>
+        <h1>Large Language Model (LLM)</h1>
+    </header>
+
+    <div class="LLMdef">
+        <h3>Definition of LLMs:</h3>
+        <ul>
+            <li>
+                <h4>Large</h4>
+            </li>
+            <ul>
+                <li>Training data and resources to work</li>
+            </ul>
+            <li>
+                <h4>Language</h4>
+            </li>
+            <ul>
+                <li>Human-like text (Powerful in processing and analyzing human language data)</li>
+            </ul>
+            <li>
+                <h4>Model</h4>
+            </li>
+            <ul>
+                <li>Learn complex patterns using text data (In the case of LLMs, the data is text from internet)</li>
+            </ul>
+        </ul>
+    </div>
+
+    <div class="AILandscape">
+        <h2>The AI Landscape:</h2>
+        <div id="ai" class="circle" data-title="Artificial Intelligence"
+            data-text="AI is the broad field of creating systems that mimic human intelligence." style="
+            top: 10px; left: 110px; 
+            width: 480px; height: 480px; 
+            border-radius: 50%; 
+            background-color: #005dc081;
+            font-size: 2.2rem;
+        "><span style="position: relative; top: -175px;">Artificial Intelligence</span>
+        </div>
+        <div id="ml" class="circle" data-title="Machine Learning"
+            data-text="A subfield of AI that enables models to learn patterns from data without explicit instructions."
+            style="
+            top: 90px; left: 149px; 
+            width: 400px; height: 400px; 
+            border-radius: 50%; 
+            background-color: #1b93f6a0;
+            font-size: 2.4rem;
+        "><span style="position: relative; top: -107.5px;">Machine Learning</span>
+        </div>
+        <div id="dl" class="circle" data-title="Deep Learning"
+            data-text="A subset of ML, which can recognize complex patterns like those found in computer vision and self-driving cars."
+            style="
+            top: 225px; left: 215px; 
+            width: 265px; height: 265px; 
+            border-radius: 50%; 
+            background-color: #b13ec5cd;
+        "><span style="position: relative; top: -10px; left: -53px">Deep Learning</span>
+        </div>
+        <div id="nlp" class="circle" data-title="Natural Language Process"
+            data-text="Utilize ML techniques, among others, to help computers understand and process human language.\nSince machines do not inherently understand human language, NLP addresses this challenge by converting text into numerical form, allowing models to identify patterns and structures.\n<b>These NLP techniques form the foundation of Large Language Models (LLMs).</b>"
+            style="
+            top: 190px; left: 435px; 
+            width: 300px; height: 300px; 
+            border-radius: 50%; 
+            background-color: #e7bc4ee8;
+        "><span style="position: relative; top: -0px; left: 35px">Natural Language Process</span>
+        </div>
+        <div id="llm" class="circle" data-title="Large Language Model"
+            data-text="LLM use DL techniques to perform a variety of NLP tasks such as text classification, summarization, generation, and more."
+            style="
+            top: 310px; left: 369px; 
+            width: 180px; height: 180px; 
+            border-radius: 50%; 
+            background-color: #00ced1;
+        ">Large Language Model</div>
+    </div>
+    <br>
+    <br>
+    <hr style="border: none; height: 2.5px; background-color: #ccc;">
+    <br>
+    <div class="LLMAPP" style="margin-left: 30px;">
+        <h2><b>Popular Language Generator:</b></h2>
+        <h4>The GPT series by OpenAI is one of the most popular language models among the family of LLMs,
+            primarily because of its advanced ability to engage in rich human interactions.</h4>
+        <br>
+        LLMs can perform a wide range of tasks, such as:
+
+        <h2><b>Applications:</b></h2>
+        <ul id="appList" style="font-size: 1.2rem; color:#0061a7">
+            <li data-desc="Analyze opinions or emotions in a piece of text (positive, negative, neutral).">Sentiment
+                analysis</li>
+            <li data-desc="Detect main subjects or key themes in documents or conversations.">Identifying themes</li>
+            <li data-desc="Automatically translate between languages using AI models.">Translating text or speech</li>
+            <li data-desc="Generate syntactically correct source code based on text prompts.">Generating code</li>
+            <li data-desc="Predict the next word or phrase in a sentence.">Next word prediction</li>
+        </ul>
+
+        <div class="AppEXample">
+            <h2 style="display: inline;">Real-World Applications:</h2>
+            <span style="margin-left: 40px;">analyzing health record is important for giving personalized
+                recommendations to provide quality healthcare.</span>
+
+            <div>
+                <div style="display: inline-block; margin-top: 10px; margin-left: 200px; ">
+                    <h3>Doctor's notes:</h3>
+                    <ul>
+                        <li>Jargon</li>
+                        <li>Abbreviations</li>
+                        <li>Domain expertise</li>
+                        <li>Varying writing style</li>
+                        <li>Varied text data and acronyms</li>
+                    </ul>
+                </div>
+
+                <div style="display: inline-block; margin-left: 200px;">
+                    <h3>Challenges:</h3>
+                    <ul>
+                        <li>Hard to understand terms</li>
+                        <li>Difficult to interpret</li>
+                        <li>Difficult to describe patient files</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Revolutionizing Healthcare Sector:</h2>
+            <div><span style="margin-left: 40px;">Analyze patient data to offers personalized recommendations.</span>
+            </div>
+            <div><span style="margin-left: 40px;">Must adhere to privacy laws.</span></div>
+            <div class="healthcare-flow">
+                <div class="box-step">
+                    <ul>
+                        <li>Medical records</li>
+                        <li>Health check-up records</li>
+                        <li>image reports</li>
+                        <li>and more...</li>
+                    </ul>
+                </div>
+                <div class="arrow">→</div>
+                <div class="circle-step">Large Language Model</div>
+                <div class="arrow">→</div>
+                <div class="box-step">
+                    Personalized Treatment Recommendations
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <br>
+    <hr style="border: none; height: 2.5px; background-color: #ccc;">
+    <br>
+    <h2 style="margin-left: 30px;">Challenges of Language Modeling:</h2>
+    <ul id="challengesList" style="font-size: 1.3rem; margin-left: 30px; color: #0061a7;">
+        <li
+            data-desc="Word order matters: models must learn how words form correct, meaningful sequences.\nDifferent position = Different meaning">
+            Word sequences</li>
+        <li
+            data-desc="Context Modeling: models must understand what was said before to get what comes next.\n\nLanguage is highly contextual, meaning the same word can have different meanings depending on the context in which it is used.">
+            Understanding context</li>
+        <li
+            data-desc="Some sentences depend on words that appear much earlier in the text.\nRecognizing and connecting distant words in a sentence is difficult — a challenge for traditional language models.">
+            Long-range dependency</li>
+    </ul>
+
+    <h2 style="text-align: center;">Single-task Learning vs Multi-task Learning</h2>
+    <div class="learning-comparison">
+        <!-- Single-task -->
+        <div class="task-block">
+            <h3>Single-task Learning</h3>
+            <img src="image/single-task.png" alt="Single-task Learning" class="task-img" />
+            <ul>
+                <li>Task-specific</li>
+                <li>Less flexible</li>
+                <li>Traditional models and early LLMs</li>
+                <li>Time and resource expensive</li>
+                <li>Requires separate training for each task</li>
+                <li>Hard to transfer learning across tasks</li>
+            </ul>
+        </div>
+
+        <!-- Multi-task -->
+        <div class="task-block">
+            <h3>Multi-task Learning</h3>
+            <img src="image/multi-task.png" alt="Multi-task Learning" class="task-img" />
+            <ul>
+                <li>Versatile</li>
+                <li>Handles multiple tasks simultaneously</li>
+                <li>Used in more advanced LLMs</li>
+                <li>Less training data needed (shared across tasks)</li>
+                <li>Improved generalization</li>
+                <li>Knowledge transfer between tasks</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="LLMsUnderstand" style="text-align: center;">
+        <h2>How do LLMs Understand:</h2>
+        <ul style="display: inline-block; text-align: left; padding-left: 220px; margin-top: -10px;font-size: 1.5rem;">
+            <li>Trained on vast amounts of data</li>
+            <li>Largeness of LLMs: parameters</li>
+            <li>Parameters, represent the patterns and rules (learned from training data)</li>
+            <li>More parameters ► Complex patterns</li>
+            <li>Generates sophisticated and accurate responses</li>
+        </ul>
+    </div>
+
+    <br>
+
+    <p style="margin-left: 260px;">How LLMs improve text data applications:</p>
+    <div class="LLMImprove" style="margin-top: -35px;">
+        <div class="LLMs">
+            <h3>LLMs:</h3>
+            <ul>
+                <li>Overcome data's unstructured nature</li>
+                <li>Outperform traditional models</li>
+                <li>Understand linguistic subtleties</li>
+            </ul>
+        </div>
+
+        <div class="How">
+            <h3>How?</h3>
+            <ul>
+                <li>LLMs "largeness"</li>
+                <li>Extensive training data</li>
+                <li>Many parameters</li>
+                <li>Emergent abilities</li>
+            </ul>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="LargeChallenges" style="text-align: center;">
+        <h2>"Largeness" Challenges:</h2>
+        <ul style="display: inline-block; text-align: left; padding-left: 220px; margin-top: -10px;font-size: 1.5rem;">
+            <li>Powerful Computers <i>(specialized infrastructure due to the massive amounts of data and computational
+                    resources involved.)</i></li>
+            <li>Efficient model training method</li>
+            <li>Large amounts of training data</li>
+        </ul>
+    </div>
+
+    <br>
+
+    <div class="LLMChallenges"
+        style="margin-top: -15px; font-size: 1.3rem; display: flex; gap: 30px; justify-content: space-around; margin-left: 20px;">
+        <div class="ComputingPower">
+            <h3>Computing Power:</h3>
+            <ul>
+                <li>Memory</li>
+                <li>Processing power</li>
+                <li>Infrastructure</li>
+                <li>Expensive</li>
+                <li>LLM(requires):</li>
+                <ul>
+                    <li>100,000's Central Processing Units(CPUs)</li>
+                    <li>10,000's Graphic Processing Units(GPUs)</li>
+                </ul>
+            </ul>
+        </div>
+
+        <div class="EfficientModelTraining">
+            <h3>Efficient Model Training:</h3>
+            <ul>
+                <li>Training time is huge</li>
+                <li>May take weeks or even months</li>
+                <li>Efficient model training = faster training time (also reduce the cost)</li>
+                <li>355 years of processing time on a single GPU</li>
+            </ul>
+        </div>
+
+        <div class="DataAvailability">
+            <h3>Data Availability:</h3>
+            <ul>
+                <li>Need high-quality data</li>
+                <li>To learn the complexities and subtleties of language</li>
+                <li>A few hundred gigabytes(GBs) of text data</li>
+                <li>Massive amount of data</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <br>
+    <hr style="border: none; height: 2.5px; background-color: #ccc;">
+    <br>
+
+
+    <div class="section" style="margin: 40px;">
+        <h2 style="text-align: center;">Reaching the Threshold in LLMs</h2>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: flex-start;">
+            <!-- Text block -->
+            <div style="flex: 1; min-width: 300px; max-width: 600px;">
+                <p style="font-size: 1.2rem; line-height: 1.7;">
+                    In the development of Large Language Models (LLMs), reaching the <b>threshold</b> refers to the
+                    point where the model becomes sufficiently trained to understand and generate human-like language
+                    with meaningful accuracy. It’s the level at which the model transitions from "learning" to being
+                    actually <b>useful</b> and <b>reliable</b> for tasks like answering questions, generating text, or
+                    summarizing information.
+                </p>
+                <p style="font-size: 1.2rem; line-height: 1.7;">
+                    Think of the threshold as a <b>performance checkpoint</b>. If the model hasn’t passed it, it might
+                    still produce incorrect, irrelevant, or incoherent responses. Once the model crosses that threshold,
+                    it shows signs of <b>language understanding, reasoning, consistency, and adaptability</b>.
+                </p>
+                <p style="font-size: 1.2rem; line-height: 1.7;">
+                    Reaching this point is not accidental — it happens through a structured process of <i>training and
+                        refining</i> the model, which is explained in the next section: <b>Building Blocks of LLMs</b>.
+                </p>
+            </div>
+
+            <!-- image visual -->
+            <div style="flex: 1; min-width: 250px; max-width: 400px;">
+                <img src="image/threshold-graph.png" alt="Threshold Learning Concept"
+                    style="width: 100%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <p style="font-size: 0.95rem; color: #555; text-align: center; margin-top: 8px;">
+                    Example illustration: The model improves gradually, and crosses a threshold where it becomes useful.
+                </p>
+            </div>
+        </div>
+
+        <div style="margin-top: 25px;">
+            <p style="font-size: 1.1rem; color: #333;">
+                ➜ Now that we understand what the threshold is, let's look at how LLMs are built up to reach it through
+                foundational steps...
+            </p>
+        </div>
+    </div>
+
+
+
+    <!-- BUILDING BLOCKS OF LLMs -->
+    <section style="margin: 60px;">
+        <h2 style="text-align: center;">Building Blocks of LLMs</h2>
+        <div id="llmBlocks"
+            style="display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 40px;">
+            <!-- JS will generate blocks here -->
+        </div>
+    </section>
+
+    <!-- POPUP MODAL -->
+    <div id="blockPopup" style="
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        background: #ffffff;
+        color: #222;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        display: none;
+        z-index: 2000;
+        font-family: sans-serif;
+    ">
+        <div id="blockTitle" style="font-size: 2.0rem; font-weight: bold; margin-bottom: 12px;"></div>
+        <div id="blockContent" style="
+            font-size: 1rem;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 260px;
+            padding-right: 10px;
+            ">
+        </div>
+
+        <div id="popupButtons" style="
+            position: absolute;                 /*position will not affect each other*/
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            display: flex;                      /*keeps them in a row.*/
+            justify-content: space-between;
+            padding: 0 25px;
+        ">
+            <button id="prevStep"
+                style="position: absolute; bottom: 10px; background: #9e9e9e; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
+                ◀ Previous
+            </button>
+
+            <button id="closeStep" onclick="closePopup()"
+                style="position: absolute; bottom: 10px; left: 280px; background: #f44336; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
+                ✖ Close
+            </button>
+
+            <button id="nextStep"
+                style="position: absolute; bottom: 10px; left: 550px; background: #2196f3; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">
+                Next ➜
+            </button>
+        </div>
+    </div>
+
+
+    <hr style="border: none; height: 2.5px; background-color: #ccc;">
+    <br>
+
+    <h2>🔧 Overcoming the Challenges: Fine-tuning</h2>
+    <div style="margin-left: 30px;">
+        <p style="font-size: 1.1rem; line-height: 1.6;">
+            Large language models (LLMs) are first trained on massive, general-purpose datasets. While this gives them a
+            solid foundation in language understanding, they often fall short when faced with domain-specific or
+            task-specific problems.
+        </p>
+
+        <h4>⚠️ The Challenge, Limitation of Pre-trained Models:</h4>
+        <ul style="line-height: 1.6;">
+            <li>General training <b>isn’t optimized</b> for every use case (e.g., law, medicine, finance)</li>
+            <li>LLMs might <b>lack precision</b> for specialized vocabulary or tone</li>
+            <li>Relying solely on general knowledge may cause <b>errors in sensitive fields</b></li>
+        </ul>
+
+        <h4>💡 Solution: Fine-tuning, </h4>
+        <ul style="line-height: 1.6;">
+            <li>Take a pre-trained model and <b>continue training</b> it using a smaller, task-specific dataset</li>
+            <li>Teach the model <b>exactly what you want it to learn</b> — from style to terminology</li>
+            <li>Effective even with <b>limited but relevant</b> labeled examples</li>
+        </ul>
+
+        <p style="font-size: 1.1rem; line-height: 1.6; color: #333;"><b>✅ Result:</b> The model becomes much better at
+            that particular task by learning from your curated data.</p>
+
+        <h4>📘 Example:</h4>
+        <table style="width: 100%; border-collapse: collapse; font-size: 1rem;">
+            <tr style="background-color: #f0f0f0;">
+                <th style="padding: 8px; border: 1px solid #ccc;">Before Fine-tuning</th>
+                <th style="padding: 8px; border: 1px solid #ccc;">After Fine-tuning</th>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ccc;">Understands general grammar and language</td>
+                <td style="padding: 8px; border: 1px solid #ccc;">Understands domain-specific terms (e.g., legal,
+                    medical)</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ccc;">Generates generic responses</td>
+                <td style="padding: 8px; border: 1px solid #ccc;">Generates content in a specific style or format</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ccc;">May give vague or inaccurate answers in niche topics
+                </td>
+                <td style="padding: 8px; border: 1px solid #ccc;">Performs accurately and reliably on targeted problems
+                </td>
+            </tr>
+        </table>
+
+        <h4>📌 Why Fine-tuning Works:</h4>
+        <ul style="line-height: 1.6;">
+            <li>It reuses the <b>powerful foundation</b> from pre-training</li>
+            <li>Requires far <b>less data</b> than starting from scratch</li>
+            <li>Focuses the model’s abilities on <b>what matters most to your goal</b></li>
+            <li>Improves performance, relevance, and user satisfaction</li>
+        </ul>
+        <br>
+        <h2 style="text-align: center;"><i>Pre-training gives LLMs a broad understanding, which is then enhanced with
+                fine-tuning.</i></i></h2>
+    </div>
+
+    <br><br>
+
+    <hr style="border: none; height: 2.5px; background-color: #ccc;">
+    <br>
+
+
+    <h2 style="margin-left: 30px;">Data Concerns and Considerations:</h2>
+    <ul id="LLMDataConcern" style="font-size: 1.3rem; margin-left: 30px; color: #0061a7;">
+        <li
+            data-desc=" • LLMs need a lot of data — they nned a tons of data to learn language patterns and structures.\n • Extensive computing power; think of the energy consumption\n • Can cost millions of dollars!">
+            Data Volume and Compute Power</li>
+        <li
+            data-desc=" • Quality data is essential\n • Accurate data = better learning = improved response quality = increased trust\n • Gibberish-in → gibberish-out">
+            Data Quality</li>
+        <li
+            data-desc=" • Correct data label: accurate learning, generalize patterns, accurate responses\n • Labor intensive: assigning correct label to each article\n • Incorrect labels impact model performance\n • Address errors: identify → analyze → iterate">
+            Labeling</li>
+        <li
+            data-desc=" • Influenced by societal sterotypes\n • Lack of diversity in training data\n • Discrimination and unfair outcomes\n\nEnsuring bias free data is as important as its quality and accuracy for any model including LLMs.">
+            Data Bias</li>
+        <li
+            data-desc=" • Compileance with data protection and privacy regulations.\n • Privacy is a concern:\n          - Training on data without permission can lead to a breach\n          - Legal, financial and reputational harm\n • Sensitive or Personally identifiable information(PII)\n • Get premission\n          - The relevant permissions need to be obtained so that data privacy laws are followed.">
+            Data Privacy</li>
+    </ul>
+
+    <br><br><br>
+
+    <h2 style="margin-left: 30px;">Ethical Concerns:</h2>
+    <ul id="LLMEthical" style="font-size: 1.3rem; margin-left: 30px; color: #0061a7;">
+        <li
+            data-desc=" • Challenging to understand the output (If without the transparency)\n • Difficult to identify issues\n      - Bias\n      - Errors\n      - Misuse\n • Black box">
+            Transparency Risk</li>
+        <li
+            data-desc=" • Responsibility of LLM's actions\n • Who is responsible?\n      - Incorrect and harmful advice?\n      - Model development or the company?\n">
+            Accountability Risk</li>
+        <li
+            data-desc="Disseminating harmful information\n   • Harmful content generation\n   • Misinformation spread\n   • Malicious use\n   • Toxicity">
+            Information Hazards</li>
+    </ul>
+
+    <!--INFORMATION HAZARD-->
+    <div
+        style="display: flex; justify-content: center; gap: 50px; margin-left: 20px; margin-top: 10px; font-size: 1.1rem;">
+        <div>
+            <h2>Harmful content generation:</h2>
+            <ul style="list-style-type: disc;">
+                <li>Harmful, offensive, or inappropriate</li>
+                <li>Prompt or biased training data</li>
+                <li>Example:</li>
+                <ul>
+                    <li>Bullying vs. friendly school enviornment</li>
+                    <li>Distressing and harmful</li>
+                </ul>
+            </ul>
+        </div>
+        <div>
+            <h3>Misinformation spread:</h3>
+            <ul style="list-style-type: disc;">
+                <li>Generate text on any topic</li>
+                <li>But, no verification!</li>
+                <li>Example:</li>
+                <ul>
+                    <li>"What's a goood diet for losing weight?"</li>
+                    <li>Unsubstantiated diet plan</li>
+                </ul>
+            </ul>
+        </div>
+        <div>
+            <h3>Malicious use:</h3>
+            <ul style="list-style-type: disc;">
+                <li>Bad actors explaining LLMs</li>
+                <li>Generate deceptive content</li>
+                <li>Example:</li>
+                <ul>
+                    <li>Fabricated news</li>
+                    <li>Manipulating public and causing unrest</li>
+                </ul>
+            </ul>
+        </div>
+        <div>
+            <h3>Toxicity:</h3>
+            <ul style="list-style-type: disc;">
+                <li>Inappropriate content</li>
+                <li>Training or through manipulated prompts</li>
+                <li>Example:</li>
+                <ul>
+                    <li>Insensitive response</li>
+                    <li>Stereotype</li>
+                </ul>
+            </ul>
+        </div>
+    </div>
+
+    <br><br>
+
+    <!--Environmental Concerns-->
+    <div
+        style="display: flex; gap: 40px; justify-content: center; align-items: flex-start; margin: 20px; font-size: 1.1rem; flex-wrap: wrap;">
+
+        <!-- Left column -->
+        <div style="flex: 1; max-width: 300px; margin-left: 30px;">
+            <h2>Environmental Concerns:</h2>
+            <ul style="list-style-type: disc; padding-left: 20px;">
+                <li>Ecological footprint of LLMs</li>
+                <li>Substantial energy resources to train</li>
+                <li>Impact through carbon emissions</li>
+            </ul>
+        </div>
+
+        <!-- Middle paragraph -->
+        <div
+            style="flex: 1; min-width: 320px; max-width: 400px; line-height: 1.5; border: 4px solid #02429c; padding: 15px 18px; border-radius: 10px; background-color: #61b5ffb6; box-shadow: 2px 2px 6px rgba(0,0,0,0.1);">
+            <p>
+                Training an LLM may require hundreds of thousands of CPUs and tens of thousands of GPUs — equivalent to
+                thousands of computers filling an entire building, consuming massive amounts of electricity.
+            </p>
+        </div>
+
+        <!-- Right column -->
+        <div style="flex: 1;  max-width: 550px; margin-left: 30px;">
+            <h2>Cooling requires electricity too!</h2>
+            <p>LLMs generate significant heat due to their high computational demands:</p>
+            <ul style="list-style-type: disc; padding-left: 20px;">
+                <li>Produce considerable heat that needs cooling</li>
+                <li>Balance the cost and benefits</li>
+                <ul style="padding-left: 20px;">
+                    <li>Use renewable energy</li>
+                    <li>Energy-efficient tech</li>
+                </ul>
+            </ul>
+        </div>
+    </div>
+
+    <br>
+    <hr style="border: none; height: 2.5px; background-color: #ccc;">
+    <br>
+
+    <div style="margin-left: 30px;">
+        <h1>Where are LLMs heading?</h1>
+
+        <div>
+            <h3>Model Explainability:</h3>
+            <p>As LLMs become more powerful, it's crucial to understand how they arrive at their outputs.</p>
+            <ul>
+                <li>How do they arrive at their outputs?</li>
+                <li>Build trust and transparency</li>
+                <li>Identify and correct the biases or errors</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3>Efficiency:</h3>
+            <ul>
+                <li>Computational efficiency</li>
+                <ul>
+                    <li>High-qualoty output with less compute (speeding up data processing to save energy and time)</li>
+                </ul>
+                <li>Faster and efficient</li>
+                <ul>
+                    <li>Model compression</li>
+                    <li>Optimization</li>
+                </ul>
+                <li>Benefits: better storage, lower energy use (making LLMs more sustainable and cost-effective)</li>
+                <li>Accessibility and sustainability</li>
+                <ul>
+                    <li>Promote green AI</li>
+                    <li>Reduces operating costs</li>
+                </ul>
+            </ul>
+        </div>
+
+        <div>
+            <h3>Unsupervised Bias Handling:</h3>
+            <ul>
+                <li>Biased data → discrimination</li>
+                <li>Unsupervised bias handling</li>
+                <ul>
+                    <li>Bias detection and mitigation techniques, automatically</li>
+                    <li>No need of explicit human-labeled data</li>
+                    <li>Identifies and reduces by analyzing patterns</li>
+                </ul>
+                <li>Challenges:</li>
+                <ul>
+                    <li>Subtle, difficult to detect</li>
+                    <li>Might introduce new biases</li>
+                </ul>
+            </ul>
+        </div>
+
+        <div>
+            <h3>Enhanced Creativity:</h3>
+            <ul>
+                <li>Creativity in text-based and visual art forms (like poetry and storytelling, and conjunction with
+                    other AI models, they have produced visual art and music)</li>
+                <li>Artistic content: learned patterns, not emotional understanding</li>
+                <li>Lack human-like comprehension of art or emotions</li>
+                <li>Demonstrate human-like emotional behavior</li>
+                <li>Future: emption inference</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <br><br><br><br><br><br><br>
+
+    <div class="backButton" style="text-align: center; margin-top: 2rem;">
+        <a class="button-link" href="dl.html">← Back to DL Overview</a>
+    </div>
+
+    <br><br><br>
+
+
+    <!-- POPUP WINDOW (Hidden by now, appear when user's cursor points certain things)-->
+    <div class="popup" id="popupBox">
+        <div class="popup-title" id="popupTitle"></div>
+        <div class="popup-text" id="popupText"></div>
+    </div>
+    <!--subwindow for description of each applications-->
+    <div id="tooltip" style="
+        position: fixed;
+        background-color: #333;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        pointer-events: none;
+        display: none;
+        max-width: 250px;
+        z-index: 1001;
+        white-space: pre-wrap;
+    "></div>
+
+
+    <script>
+        // Menu bar
+        const menu = document.querySelector('.menu');
+        const menuButton = document.getElementById('menuButton');
+        const menuContent = document.getElementById('menuContent');
+
+        menuButton.addEventListener('click', () => {
+            if (menu.classList.contains('open')) {
+                // When closing: play bounce-up animation
+                menuContent.style.animation = 'menuSlideBounceUp 0.5s ease forwards';
+                setTimeout(() => {
+                    menu.classList.remove('open');
+                    menuContent.style.animation = ''; // Reset after animation
+                }, 500); // Match the animation duration
+            } else {
+                menu.classList.add('open');
+                menuContent.style.animation = 'menuSlideBounce 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+            }
+        });
+
+        // popup
+        const popup = document.getElementById('popupBox');
+        const titleEl = document.getElementById('popupTitle');
+        const textEl = document.getElementById('popupText');
+
+        const circles = document.querySelectorAll('.circle');
+
+        circles.forEach(circle => {
+            circle.addEventListener('mouseenter', () => {
+                const title = circle.getAttribute('data-title');
+                const text = circle.getAttribute('data-text').replace(/\\n/g, '<br>');
+
+                titleEl.textContent = title;
+                textEl.innerHTML = text;
+                popup.style.display = 'block';
+            });
+
+            circle.addEventListener('mouseleave', () => {
+                popup.style.display = 'none';
+            });
+        });
+
+        /////////////////////////////
+
+        const tooltip = document.getElementById('tooltip');
+        const items = document.querySelectorAll('#appList li');
+
+        items.forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                tooltip.innerText = item.getAttribute('data-desc');
+                tooltip.style.display = 'block';
+                item.style.color = "blue";         // when user is finding describing for the word change color and bold
+                item.style.fontWeight = "bolder";
+                item.style.cursor = "pointer";     // change hover to pointer when point to the word
+            });
+
+            item.addEventListener('mousemove', (e) => {
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+                item.style.color = "#0061a7";
+                item.style.fontWeight = "normal";     // when user is leaving word return to normal
+            });
+        });
+
+
+        /////////////////////////////
+
+        const challengeItems = document.querySelectorAll('#challengesList li');
+
+        challengeItems.forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                const desc = item.getAttribute('data-desc').replace(/\\n/g, '<br>');
+                tooltip.innerHTML = desc;
+                tooltip.style.display = 'block';
+                item.style.color = "blue";
+                item.style.fontWeight = "bolder";
+                item.style.cursor = "pointer";
+            });
+
+            item.addEventListener('mousemove', (e) => {
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+                item.style.color = "#0061a7";
+                item.style.fontWeight = "normal";
+            });
+        });
+
+
+        /////////////////////////////
+
+        const DataCorncerns = document.querySelectorAll('#LLMDataConcern li');
+
+        DataCorncerns.forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                const desc = item.getAttribute('data-desc').replace(/\\n/g, '<br>');
+                tooltip.innerHTML = desc;
+                tooltip.style.display = 'block';
+                item.style.color = "blue";
+                item.style.fontWeight = "bolder";
+                item.style.cursor = "pointer";
+            });
+
+            item.addEventListener('mousemove', (e) => {
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+                item.style.color = "#0061a7";
+                item.style.fontWeight = "normal";
+            });
+        });
+
+
+        /////////////////////////////
+
+        const Ethical = document.querySelectorAll('#LLMEthical li');
+
+        Ethical.forEach(item => {
+            item.addEventListener('mouseenter', (e) => {
+                const desc = item.getAttribute('data-desc').replace(/\\n/g, '<br>');
+                tooltip.innerHTML = desc;
+                tooltip.style.display = 'block';
+                item.style.color = "blue";
+                item.style.fontWeight = "bolder";
+                item.style.cursor = "pointer";
+            });
+
+            item.addEventListener('mousemove', (e) => {
+                tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.style.left = (e.clientX + 15) + 'px';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                tooltip.style.display = 'none';
+                item.style.color = "#0061a7";
+                item.style.fontWeight = "normal";
+            });
+        });
+
+
+        /////////////////////////////
+        //Building Blocks of LLMs:
+
+        const blockSteps = [
+            {
+                icon: `<img src="icons/Text_Pre_processing.png" alt="icon" style="width: 80px; height: 80px;">`,
+                title: "Text Pre-processing",
+                functions: "Tokenization\n\nLemmatization\n\nStop-Word Removal",
+                content: `
+                <p><i>Prepare raw text into clean, structured data the model can work with.</i></p>
+                <ul>
+                    <li><b>Tokenization</b>: Split text into units like words or subwords.</li>
+                    <li><b>Lemmatization</b>: Reduce words to base form (e.g., "running" → "run").</li>
+                    <li><b>Stop-word Removal</b>: Remove common words like "the", "is".</li>
+                </ul>
+                <p>📘 <b>Example:</b> Clean input text before training a chatbot to focus on core meaning.</p>
+                `
+            },
+            {
+                icon: `<img src="icons/Text_Representation.png" alt="icon" style="width: 80px; height: 80px;">`,
+                title: "Text Representation",
+                functions: "Bag-of-Words\n\nWord Embedding",
+                content: `
+                <p><i>Convert text into numerical form so models can understand it.</i></p>
+                <ul>
+                    <li><b>Bag-of-Words</b>: Count how often words appear.</li>
+                    <li><b>Embeddings</b>: Represent words in vector space with meaning (e.g., BERT, Word2Vec).</li>
+                </ul>
+                <p>📘 <b>Example:</b> "King - Man + Woman ≈ Queen" shows semantic relationships in vector space.</p>
+                `
+            },
+            {
+                icon: `<img src="icons/Pre_Training.png" alt="icon" style="width: 80px; height: 80px;">`,
+                title: "Pre-training",
+                functions: "Next-Word Prediction\n\nMasked Language Modeling\n\n<h2>Transformer</h2>",
+                content: `
+                <p><i>Train the model on large text datasets to learn language structure, patterns, and facts.</i></p>
+                <ul>
+                    <li><b>Next Word Prediction</b>: Predicts the most likely next word in a sentence.</li>
+                    <li><b>Masked Language Modeling</b>: Predicts missing or masked words within a sentence (used by models like BERT).</li>
+                </ul>
+                <p>📘 <b>Example:</b> Learning from books or websites without task-specific labels.</p>
+                <ul>
+                    <li><b>Transformer Architecture</b>: A deep learning model based on self-attention. Allows the model to understand context across entire sentences, not just nearby words.</li>
+                </ul>
+                <p>📘 <b>Example:</b> "The cat sat on the ___" → the model predicts "mat", learning from structure and meaning.</p>
+                <p><b>Note:</b> The Transformer is the core architecture behind nearly all modern LLMs (e.g., GPT, BERT, T5).</p>
+                `,
+                id: "pretraining" // special marker
+            },
+            {
+                icon: `<img src="icons/Fine_Tuning.png" alt="icon" style="width: 80px; height: 80px;">`,
+                title: "Fine-tuning",
+                functions: "Zero-shot learning\n\nFew-shot learning\n\nMulti-shot learning",
+                content: `
+                <p><i>Customize the pre-trained model for a specific task using labeled examples.</i></p>
+                <ul>
+                    <li><b>Zero-shot</b>: No example given.</li>
+                    <li><b>Few-shot</b>: Just a few examples are used.</li>
+                    <li><b>Multi-shot</b>: Trained on many specific examples.</li>
+                </ul>
+                <p>📘 <b>Example:</b> Teaching the model to answer legal questions using a legal dataset.</p>
+                `
+            },
+            {
+                icon: `<img src="icons/Advanced_Fine_tuning.png" alt="icon" style="width: 80px; height: 80px;">`,
+                title: "Advanced Fine-tuning",
+                functions: "Reinforcement Learning through Human Feedback",
+                content: `
+                <p><i>Refine model behavior using human feedback or safety techniques.</i></p>
+                <ul>
+                    <li><b>Reinforcement Learning with Human Feedback (RLHF)</b>: Use human preferences to guide model updates.</li>
+                </ul>
+                <h3>But, why RLHF?</h3>
+                <p>General-purpose training data <i>lacks quality</i></p>
+                <ul>
+                    <li>Noise</li>
+                    <li>Errors</li>
+                    <li>Inconsistencies</li>
+                    <li>Reduced accuracy</li>
+                </ul>
+                <br>
+                <p>📘 <b>Example:</b> ChatGPT was trained with RLHF to be more helpful, safe, and aligned with user intent.</p>
+                `
+            }
+        ];
+
+        //Transformer Block
+        const transformerBlock = {
+            icon: `<img src="icons/Transformer.png" style="width: 80px;">`,
+            title: "Transformer",
+            functions: "Self-Attention\nPositional Encoding\nMulti-head Mechanism",
+            content: `
+                <p><i>The engine behind modern LLMs, powering GPT, BERT, and beyond.</i></p>
+
+                <h4>🧠 Why Transformers?</h4>
+                <ul>
+                    <li>❌ Traditional models (like RNNs & LSTMs) process input sequentially and struggle with long-range context.</li>
+                    <li>✅ Transformers use <b>self-attention</b> to consider all parts of a sentence simultaneously.</li>
+                    <li>✅ Process input <b>in parallel</b>, making training faster and more scalable.</li>
+                </ul>
+
+                <h4>⚙️ Core Components of a Transformer:</h4>
+                <ul>
+                    <li><b>Input Embedding</b>: Converts each word into a vector (numerical form).</li>
+                    <li><b>Positional Encoding</b>: Adds information about the word’s position in the sentence.</li>
+                    <li><b>Self-Attention</b>: Allows the model to focus on relevant words across the input.</li>
+                    <li><b>Feedforward Layers</b>: Introduce complex transformations to enhance learning.</li>
+                    <li><b>Layer Normalization & Residuals</b>: Stabilize training and speed up convergence.</li>
+                </ul>
+
+                <h4>📦 Inside the Transformer:</h4>
+                <ol>
+                    <li><b>Input</b>: Raw text is fed into the model.</li>
+                    <li><b>Text Pre-processing & Representation</b>: The text is cleaned, tokenized, and turned into vectors.</li>
+                    <li><b>Positional Encoding</b>: Adds position info to each token vector.</li>
+                    <li><b>Encoder Stack</b>: Extracts meaning by applying self-attention and feedforward layers.</li>
+                    <li><b>Decoder Stack</b> (used in models like GPT): Uses encoder outputs to generate predictions.</li>
+                    <li><b>Output</b>: Produces next word, masked word, or sequence based on task.</li>
+                </ol>
+
+                <h4>💬 Example:</h4>
+                <p>In GPT's pre-training: "<i>The cat sat on the ____.</i>", the Transformer helps the model attend to "The", "cat", and "sat" together — predicting "mat" with high accuracy.</p>
+
+                <h4>📚 Is Transformer part of Pre-training?</h4>
+                <p>✅ Yes! The Transformer is the architecture used during pre-training. It’s the core that allows LLMs to learn from massive datasets and recognize language patterns efficiently.</p>
+            `
+        };
+
+
+
+        let currentStep = 0;
+
+        const blockContainer = document.getElementById('llmBlocks');
+        const blockPopup = document.getElementById('blockPopup');
+        const blockTitle = document.getElementById('blockTitle');
+        const blockContent = document.getElementById('blockContent');
+        const nextBtn = document.getElementById('nextStep');
+        const prevBtn = document.getElementById('prevStep');
+        const closeBtn = document.getElementById('closeStep');
+
+        // First Row (Main Blocks)
+        const row1 = document.createElement('div');
+        row1.style.display = "flex";
+        row1.style.flexWrap = "wrap";
+        row1.style.gap = "30px";
+        row1.style.justifyContent = "center";
+
+        const row2 = document.createElement('div');
+        row2.style.display = "flex";
+        row2.style.justifyContent = "center";
+        row2.style.marginTop = "-22px";  // space between rows
+
+        blockSteps.forEach((step, index) => {
+            const div = document.createElement('div');
+            div.className = 'step-block';
+            div.innerHTML = `
+            <div style="
+                background: hsl(${190 + index * 30}, 70%, 50%);
+                padding: 30px 15px;
+                border-radius: 0 0 35px 35px;
+                width: 190px;
+                height: 280px;
+                text-align: center;
+                color: white;
+                font-weight: bold;
+                font-size: 1.1rem;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                cursor: pointer;
+                position: relative;
+                transition: transform 0.2s;
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="font-size: 2.3rem;">${step.icon}</div>
+                <div style="font-size: 1.8rem; font-weight: bold;">${step.title}</div>
+                <div style="font-size: 0.9rem; margin-top: 40px;">${step.functions.replace(/\n/g, '<br>')}</div>
+            </div>
+            `;
+            div.onclick = () => {
+                currentStep = index;
+                showStep(currentStep);
+            };
+
+            if (step.id === "pretraining") {
+                row1.appendChild(div);
+
+                // Add transformer right after pretraining block
+                const tBlock = document.createElement('div');
+                tBlock.className = 'step-block';
+                tBlock.innerHTML = `
+                <div style="
+                    background: #ffa400;
+                    border-radius: 0 0 35px 35px;
+                    width: 170px;
+                    height: 120px;
+                    text-align: center;
+                    color: white;
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                    cursor: pointer;
+                    position: relative;
+                    transition: transform 0.2s;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="font-size: 2.3rem;">${transformerBlock.icon}</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-top: -20px;">${transformerBlock.title}</div>
+                    <div style="font-size: 0.5rem; margin-top: -2px;">${transformerBlock.functions.replace(/\n/g, '<br>')}</div>
+                </div>
+                `;
+                tBlock.onclick = () => {
+                    blockTitle.textContent = transformerBlock.title;
+                    blockContent.innerHTML = transformerBlock.content;
+                    blockPopup.classList.add('show');
+                    blockPopup.style.display = 'block';
+
+                    // Only show Close button
+                    nextBtn.style.display = "none";
+                    prevBtn.style.display = "none";
+                };
+                row2.appendChild(tBlock);
+            } else {
+                row1.appendChild(div);
+            }
+        });
+
+        blockContainer.appendChild(row1);
+        blockContainer.appendChild(row2);
+
+
+        function showStep(i) {
+            blockTitle.textContent = blockSteps[i].title;
+            blockContent.innerHTML = blockSteps[i].content;
+            blockPopup.classList.add('show');
+            blockPopup.style.display = 'block';
+
+            // Show nav buttons (except Transformer)
+            nextBtn.style.display = "inline-block";
+            prevBtn.style.display = "inline-block";
+            closeBtn.style.display = "inline-block";
+        }
+
+        nextBtn.onclick = () => {
+            currentStep = (currentStep + 1) % blockSteps.length;
+            showStep(currentStep);
+        };
+
+        prevBtn.onclick = () => {
+            currentStep = (currentStep - 1 + blockSteps.length) % blockSteps.length;
+            showStep(currentStep);
+        };
+
+        function closePopup() {
+            blockPopup.classList.remove('show');
+            setTimeout(() => {
+                blockPopup.style.display = 'none';
+
+                // Reset buttons for next open
+                nextBtn.style.display = "inline-block";
+                prevBtn.style.display = "inline-block";
+                closeBtn.style.display = "inline-block";
+            }, 400);
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
