@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Overview</title>
+  <link rel="icon" href="icons/tabIcon.png" type="image/png">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(-45deg, #f4f6c4, #fcd7d7, #e1f5d8, #c3d4fb);
+      background-size: 400% 400%;
+      animation: gradientMove 15s ease infinite;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+
+    header {
+      width: 100%;
+      width: 100vw;
+      max-width: 100%;
+      min-width: 100%;
+      text-align: center;
+      padding: 1rem;
+      background: #222;
+      color: #fff;
+      z-index: 1000;
+      height: 70px;
+    }
+
+    .menu {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      /* fully flush to the edge */
+      z-index: 1000;
+    }
+
+    .menu-button {
+      background-color: #222;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 0 8px 8px 0;
+      /* only right side rounded */
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      user-select: none;
+    }
+
+    .menu-button:hover {
+      background-color: #333;
+      transform: scale(1.05);
+    }
+
+    .menu-content {
+      display: flex;
+      flex-direction: column;
+      background-color: #222;
+      /* same as header */
+      border: 3px solid #555;
+      /* slightly thicker border */
+      border-top: none;
+      /* REMOVE TOP BORDER */
+      border-right: 1px solid #222;
+      /* right border thinner */
+      border-left: 1px solid #222;
+      /* right border thinner */
+      border-radius: 0 0 8px 8px;
+      /* Only bottom corners rounded */
+      overflow: hidden;
+      position: absolute;
+      top: 71px;
+      left: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      /* <- move up when hidden */
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      /* subtle shadow ONLY at sides and bottom */
+    }
+
+    @keyframes menuSlideBounce {
+      0% {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+
+      60% {
+        transform: translateY(10px);
+        opacity: 1;
+      }
+
+      80% {
+        transform: translateY(-5px);
+      }
+
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes menuSlideBounceUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      20% {
+        transform: translateY(-5px);
+      }
+
+      50% {
+        transform: translateY(10px);
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+    }
+
+    .menu-content a {
+      text-decoration: none;
+      color: #eee;
+      padding: 20px 20px;
+      font-weight: bold;
+      display: flex;
+      /* Make icon + text side by side */
+      /*flex-direction: column;    
+      Stack vertically */
+      align-items: center;
+      /* Center horizontally */
+      justify-content: center;
+      /* Center vertically */
+      gap: 10px;
+      /* Space between icon and text */
+      transition: background 0.3s;
+    }
+
+    .menu-content a:hover {
+      background-color: #333;
+    }
+
+    .menu-content .icon {
+      font-size: 1.5rem;
+    }
+
+    .menu-content .text {
+      font-size: 1.1rem;
+    }
+
+    .menu.open .menu-content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      animation: menuSlideBounce 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    }
+
+    /* Rotate the menu button when open */
+    .menu.open .menu-button {
+      transform: rotate(90deg);
+    }
+
+    .menu-button::before {
+      content: "☰";
+      display: inline-block;
+      transition: transform 0.4s, content 0.4s;
+      transform: rotate(0deg);
+      /* Start not rotated */
+    }
+
+
+    .menu.open .menu-button::before {
+      content: "✖";
+      /* Becomes 'x' when menu is open */
+      transform: rotate(180deg);
+    }
+
+    /*End of Menu Bar*/
+
+    .timeline {
+      display: flex;
+      justify-content: center;
+      gap: 100px;
+      margin: 30px 0;
+    }
+
+    .timeline div {
+      text-align: center;
+      max-width: 120px;
+    }
+
+    .tooltip:hover {
+      color: blue;
+    }
+
+    .AILandMap {
+      font-family: Arial, sans-serif;
+      /* Fixed width */
+      width: 760px;
+      /* Fixed height */
+      height: 490px;
+      /* So blocks are positioned inside */
+      position: relative;
+
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      /* Center the container */
+      margin: 0 auto;
+      /* hide overflow */
+      overflow: hidden;
+    }
+
+    /* Algorithms land map */
+    .AlgoBlock {
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .AlgoBlock:hover {
+      transform: scale(1.05);
+      filter: brightness(1.15);
+    }
+
+    .popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 380px;
+      background-color: #fff;
+      color: #222;
+      border: 2px solid #aaa;
+      border-radius: 8px;
+      padding: 10px;
+      display: none;
+      z-index: 1000;
+      font-family: sans-serif;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .popup-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .popup-text {
+      font-size: 0.95rem;
+      line-height: 1.3;
+    }
+
+    .AISysBlock {
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+
+    /*AIInterrealtionshipMap*/
+    .AIInterrealtionshipMap {
+      font-family: Arial, sans-serif;
+      /* Fixed width */
+      width: 95%;
+      /* Fixed height */
+      height: 880px;
+      /* So blocks are positioned inside */
+      position: relative;
+
+      background: #dbdbdb;
+      border: 1px solid #ccc;
+      /* Center the container */
+      margin: 0 auto;
+      /* hide overflow */
+      overflow: hidden;
+    }
+
+    .AIAreaBlock {
+      border: 5px solid #ffffffd0;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .AIFuncBlock {
+      border: 5px solid #ffffffd0;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      text-align: center;
+      padding: 10px;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .AIFuncBlock:hover {
+      transform: scale(1.05);
+      filter: brightness(1.15);
+    }
+
+    .button-link {
+      display: inline-block;
+      margin: 2rem auto 0;
+      padding: 0.6rem 1.2rem;
+      background: #2196f3;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .button-link:hover {
+      transform: scale(1.05);
+      filter: brightness(0.75);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header section -->
+  <header style="position: relative; background: #222; color: white;">
+    <div class="menu">
+      <div class="menu-button" id="menuButton"></div>
+      <div class="menu-content" id="menuContent">
+        <a href="index.html">
+          <span class="icon"><img src="icons/homeMenu.png" alt="Home" style="width: 60px; height: 60px;"></span>
+          <span class="text">Home</span>
+        </a>
+        <a href="ai.html">
+          <span class="icon"><img src="icons/aiMenu.png" alt="AI Overview" style="width: 60px; height: 60px;"></span>
+          <span class="text">AI Overview</span>
+        </a>
+        <a href="ml.html">
+          <span class="icon"><img src="icons/mlMenu.png" alt="Machine Learning"
+              style="width: 60px; height: 60px;"></span>
+          <span class="text">Machine Learning</span>
+        </a>
+        <a href="dl.html">
+          <span class="icon"><img src="icons/dlMenu.png" alt="Deep Learning" style="width: 60px; height: 60px;"></span>
+          <span class="text">Deep Learning</span>
+        </a>
+        <a href="llm.html">
+          <span class="icon"><img src="icons/llmMenu.png" alt="LLMs" style="width: 60px; height: 60px;"></span>
+          <span class="text">LLMs</span>
+        </a>
+      </div>
+    </div>
+    <h1>Artificial Intelligence (AI)</h1>
+  </header>
+
+  <section style="margin: 40px;">
+    <h2>Definition of AI:</h2>
+    <ul>
+      <li><b>Perception</b>: AI can sense and interpret its environment.</li>
+      <li><b>Reasoning</b>: It can analyze and draw conclusions.</li>
+      <li><b>Learning</b>: It improves through experience (ML).</li>
+      <li><b>Action</b>: It takes steps toward goals based on input.</li>
+    </ul>
+  </section>
+
+  <div style="margin-left: 30px; font-size: 1.2rem;">
+    <h2>What is Artificial Intelligence(AI)?</h2>
+    <p>Back in the 1950s, legendary mathematician <i>Alan Turing</i> — a founder of the computer science — posed a
+      groundbreaking question: <i style="font-size: 1.5rem;">"<b>Can machines think?</b>"</i></p>
+
+    <p style="font-size: 1.05rem; text-align: center;"> This question sparked a revolution. And soon after, AI emerged
+      as an exciting new
+      scientific field.</p>
+
+    <br>
+
+    <p>AI grew as a specialized field within <b>computer science</b>, the discipline that powers everything from
+      <i>hardware</i> and <i>programming languages</i> to <i>operating systems</i> and <i>algorithms</i>.
+    </p>
+    <p>Computer science is a vast field with many interconnected areas, and AI became one of its most fascinating
+      branches.</p>
+
+    <div style="display: flex; gap: 100px;">
+      <p style="width: 50%;">In the 1950s, <i>John McCarthy</i> — a founder of the computer science — described it as
+        the science and engineering of making intelligent machines. Over time, this definition expanded to describe AI
+        as the creation of machines that learn, reason, making decisions, and mimic human-like itellignce to solve
+        problems.</p>
+
+      <p style="width: 40%;">In today's data-driven world, the European Commission defines AI as systems that perceive
+        their environment, collect and interpret data, reason over inferred knowledge, make decisions, and take actions
+        to achieve a goal.</p>
+    </div>
+  </div>
+
+  <br>
+
+  <section style="margin-left: 40px; font-size: 1.2rem;">
+    <h2>AI Timeline</h2>
+    <div class="timeline">
+      <div>
+        <h4>1950s</h4>
+        <p>Turing's Test</p>
+        <img src="image/TuringTest.png"
+          style="block-size: 200px; border: 5px solid #00e3cc; border-radius: 5%; display: block; margin: 0 auto; transform: translateX(-20px);">
+      </div>
+      <h3>→</h3>
+      <div>
+        <h4>1980s</h4>
+        <p>Expert Systems</p>
+        <img src="image/ExpertSystem.png"
+          style="block-size: 150px; border: 5px solid #00e3cc; border-radius: 5%; display: block; margin: 0 auto; transform: translateX(-130px);">
+      </div>
+      <h3>→</h3>
+      <div>
+        <h4>2010s</h4>
+        <p>Deep Learning</p>
+        <img src="image/DeepLearningAI.png"
+          style="block-size: 150px; border: 5px solid #00e3cc; border-radius: 5%; display: block; margin: 0 auto; transform: translateX(-70px);">
+      </div>
+      <h3>→</h3>
+      <div>
+        <h4>Now</h4>
+        <p>Generative AI</p>
+        <img src="image/GenerativeAIai.png"
+          style="block-size: 200px; border: 5px solid #00e3cc; border-radius: 5%; display: block; margin: 0 auto; transform: translateX(-30px);">
+      </div>
+    </div>
+  </section>
+
+  <br>
+  <br>
+
+  <section>
+    <div style="margin: 60px;">
+      <h1 style="text-align: center;">AGI vs ANI: Two Types of AI</h1>
+      <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto; text-align: center; line-height: 1.6;">
+        Artificial Intelligence can be classified into two broad types: <b>ANI</b> and <b>AGI</b>.
+        Most AI you see today is <b>ANI (Artificial Narrow Intelligence)</b>, built for specific tasks.
+        <b>AGI (Artificial General Intelligence)</b> refers to AI that can understand, learn, and perform any
+        intellectual
+        task that a human can.
+      </p>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 60px; margin-top: 40px; flex-wrap: wrap;">
+      <!-- ANI Block -->
+      <div
+        style="flex: 1; min-width: 280px; max-width: 400px; background: #f1f1f1; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <img src="icons/ani_icon.png" alt="ANI Icon" style="width: 120px; display: block; margin: 0 auto;"><br>
+        <h3 style="text-align: center; color: #007acc;">ANI (Artificial Narrow Intelligence)</h3>
+        <ul style="font-size: 1.1rem; line-height: 1.6;">
+          <li>Designed for a specific task</li>
+          <li>Highly efficient in a narrow domain</li>
+          <li>Examples: Chatbots, voice assistants, spam filters</li>
+          <li>Cannot generalize beyond its training</li>
+        </ul>
+      </div>
+
+      <!-- AGI Block -->
+      <div
+        style="flex: 1; min-width: 280px; max-width: 400px; background: #f1f1f1; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <img src="icons/agi_icon.png" alt="AGI Icon" style="width: 120px; display: block; margin: 0 auto;"><br>
+        <h3 style="text-align: center; color: #00b894;">AGI (Artificial General Intelligence)</h3>
+        <ul style="font-size: 1.1rem; line-height: 1.6;">
+          <li>Can learn and perform any intellectual task</li>
+          <li>Has human-like or exceed reasoning and adaptability</li>
+          <li>Still theoretical — not yet achieved</li>
+          <li>Goal: replicate general human intelligence</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <br>
+
+  <section style="margin: 50px;">
+    <h2 style="text-align: center;">Comparison: ANI vs AGI</h2>
+    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px;">
+      <!-- ANI Block -->
+      <div style="flex: 1; max-width: 400px; text-align: center;">
+        <h3>Artificial Narrow Intelligence (ANI)</h3>
+        <p>Performs a single task extremely well, such as language translation, facial recognition, or recommendation
+          engines. Most AI we see today is ANI.</p>
+        <img src="image/ani_example.png" alt="ANI Example" style="margin-top: 10px; width: 200px; border-radius: 8px;">
+      </div>
+
+      <!-- AGI Block -->
+      <div style="flex: 1; max-width: 400px; text-align: center;">
+        <h3>Artificial General Intelligence (AGI)</h3>
+        <p>Capable of understanding, learning, and applying intelligence across a broad range of tasks, similar to human
+          cognition. Still theoretical and not yet realized.</p>
+        <img src="image/agi_example.png" alt="AGI Example" style="margin-top: 10px; width: 200px; border-radius: 8px;">
+      </div>
+    </div>
+  </section>
+
+  <hr style="border: none; height: 2.5px; background-color: #ccc;">
+  <br>
+
+  <section class="AreasOfAI" style="margin-left: 30px; font-size: 1.2rem; text-align: center;">
+    <h2>Subdomains of Artificial Intelligence:</h2>
+    <p>There is no unique way to categorize the subdomains of AI</p>
+    <ul style="display: inline-block; text-align: left;  margin-top: -10px;font-size: 1.5rem;">
+      <li>Machine Learning</li>
+      <li>Knowledge representation and reasoning</li>
+      <li>Robotics</li>
+      <li>Computer Vision</li>
+      <li>Natural Language Processing(NLP)</li>
+    </ul>
+  </section>
+
+  <br>
+
+  <section style="margin: 30px;">
+    <h2><b>What AI can do and cannot do?</b></h2>
+    <ul style="font-size: 1.5rem;">
+      <li>Things AI can do:</li>
+      <ul id="AICanDo" style="font-size: 1.2rem; color:#0061a7">
+        <li
+          data-desc="One of the most popular areas in AI is Machine Learning:\n               _____________________                    \nInput → | prediction and inference | → Outputs\n -past data   (Machine Learning)           -Future forecast\n -predicators                                          -Target\n\n • Prediction: forecasting what will happen in the future, (e.g. forecast the weather)\n • Inference: determine output based on data inputs(predictors), (e.g. Recommend a book)">
+          Prediction and inference</li>
+        <li
+          data-desc="Identify patterns in the data to help make decisions:\n   • Predictions and inference\n   • Clustering(segmentation)\n         used in applications like customer segmentation for the discovery of groups of data with similar characteristics\n   • Anomaly detection\n         used in security and finance domains to identify transactions or other data occurrences that deviate from the normal.\n   • Data generation(Generative AI)\n         a recent and popular use of AI for text, image, and sound generation, consists in generating new data based on existing data patterns.">
+          Pattern recognition</li>
+        <li
+          data-desc="Find the best possible solution for a problem at a minimum cost, under constraints\nExamples of optimization problems solvable by AI include:    • Logistics and delivery: smart routing\n    • Energy: power grid operation and control\n    • Tourism: flights and hotel pricing\n    • Marketing: maximum revenue campaigns">
+          Optimization</li>
+        <li
+          data-desc="Follow set of rules to perform(usually repetitive) tasks\n     Automation itself is not AI, as it does not involve mimicking human intelligent processing.\n\n          AI≠Automation\n\n     But AI can help omprove automation, improving the efficiency of processes that would be time-consuming when performed by humans, such as:\n                     • classifying documents, photos, etc.\n                     • Job application screening\n                     • Parcel management robots\n         (hekp improve)\n\n          AI → Automation">
+          Automation</li>
+      </ul>
+      <p style="font-size: 1.1rem;">While this isn't a complete list, these represent some of AI's most impactful
+        applications.</p>
+    </ul>
+
+    <ul style="font-size: 1.5rem;">
+      <li>Limitations of AI:</li>
+      <ul id="AICantDo" style="font-size: 1.2rem; color:#0061a7">
+        <li
+          data-desc="Conversational AI solutions like chatbots excels at answering human enquiries but they cannot mimic critical aspects in social interations, such as emotional intelligence, and empathy.">
+          <b>Social skilles:</b> emotional intelligence, empathy
+        </li>
+        <li
+          data-desc="New situation may not seen before, like a brand new product, may cause AI solutions like personalized recommendation engines to have no clue which user might be interested in it.">
+          <b>New, unseen situations</b>, e.g. new items to recomment
+        </li>
+        <li
+          data-desc="It occurs when system makes predictions that favor certain groups over others based on sex, age, ethnicity, etc.">
+          <b>Bias:</b> making unfair decisions to some grpups
+        </li>
+        <li
+          data-desc="Without sufficient quality data to learn from the effectiveness of most AI solution is at stake.">
+          <b>Data:</b> the main fuel of AI but also it most evident limitation
+        </li>
+      </ul>
+    </ul>
+  </section>
+
+  <section style="margin: 60px;">
+    <h2><b>Predictive vs. Generative AI</b></h2>
+    <p style="font-size: 1.2rem;">Predictive AI and Generative AI are two of the various broad classes of AI, each of
+      which has a different range of uses.</p>
+    <ul style="font-size: 1.1rem;">
+      <li><b>Predictive AI</b> is used to make predictions about the future based on historical data or in inference
+        tasks like classiying data examples based on previously classified(labeled) examples.</li>
+      <li>Meanwhile, <b>Generative AI</b> is being widely used recently for creating new content, namely text, images,
+        and audio generation, based on the properties and patterns of existing content.</li>
+    </ul>
+    <br>
+    <div
+      style="display: flex; justify-content: center; gap: 60px; margin-top: 40px; flex-wrap: wrap; font-size: 1.2rem;">
+      <!-- Predictive AI Block -->
+      <div
+        style="flex: 1; min-width: 280px; max-width: 400px; background: #b0c1d6; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <img src="icons/PredictiveAI.png" alt="ANI Icon" style="width: 120px; display: block; margin: 0 auto;"><br>
+        <h3 style="text-align: center; color: #007acc;">Predictive AI</h3>
+        <ul style="font-size: 1.1rem; line-height: 1.6;">
+          <li>It is commonly used in areas such as credit scoring, stock price forecasting, spam filtering, and medical
+            diagnoses.</li>
+        </ul>
+      </div>
+
+      <!-- Generative AI Block -->
+      <div
+        style="flex: 1; min-width: 280px; max-width: 400px; background: #b0c1d6; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <img src="icons/GenerativeAI.png" alt="AGI Icon" style="width: 120px; display: block; margin: 0 auto;"><br>
+        <h3 style="text-align: center; color: #019a7b;">Generative AI</h3>
+        <ul style="font-size: 1.1rem; line-height: 1.6;">
+          <li>Tools like ChatGPT, DALL·E, and MusicLM are examples of generative models that can produce essays,
+            artwork, or even music from simple prompts.</li>
+        </ul>
+      </div>
+    </div>
+    <br>
+    <p style="font-size: 1.4rem; margin-top: 10px; text-align: center;">
+      Together, they complement each other — Predictive AI supports decision-making, while Generative AI fuels
+      creativity and content generation.
+    </p>
+  </section>
+
+  <br>
+  <hr style="border: none; height: 2.5px; background-color: #ccc;">
+  <br>
+
+  <section style="margin: 30px;">
+    <h2><b>How does AI can solve tasks?</b></h2>
+    <p style="text-align: center; font-size: 2.0rem;"><b>Algorithms and AI systems</b></p>
+
+    <section style="font-size: 1.2rem; margin: 60px;">
+      <p style="font-size: 1.5rem;"><b>Algorithm:</b> a set of (computer) instructions — rules, or operations—to solve a
+        problem or perform an action.</p>
+
+      <!--Algorithm land map-->
+      <div class="AILandMap">
+        <div id="input" class="AlgoBlock" data-title="Inputs"
+          data-text="The data or information needed to initiate the process.\n<img src='image/input(1).png' style='width:100px; margin-top:10px; display:block; margin-left:auto; margin-right:auto;'>"
+          style="
+            top: 10px; left: 290px; 
+            width: 220px; height: 90px; 
+            border-radius: 5%; 
+            background-color: #005dc081;
+            font-size: 2.3rem;
+        "><span style="position: relative;">Inputs</span>
+          <img src="image/input.png" style="height: 80px; width: 80px; transform: translateX(10px);">
+        </div>
+        <img src="image/DownArrow.png"
+          style="margin-top: 108px; margin-left: 350px; height: 30px; width: 80px; transform: translateX(10px);">
+        <div id="process" class="AlgoBlock" data-title="Process"
+          data-text="Set of operations or instructions to perform.\n\nFor instance, if our algorithm calculates the average height of a large group of people whose measurements are passed as inputs that mix heights expressed in cm and inches, the algorithm's steps would include normalization into a common measurement followed by calculating the average height.\n<img src='image/process(1).png' style='width:100px; margin-top:10px; display:block; margin-left:auto; margin-right:auto;'>"
+          style="
+            top: 148px; left: 220px; 
+            width: 380px; height: 200px; 
+            border-radius: 5%; 
+            background-color: #1b93f6a0;
+            font-size: 2.4rem;
+        "><span style="position: relative; top: -10px;">Process<br>(instruction)</span>
+          <img src="image/process.png" style="height: 160px; width: 160px;">
+        </div>
+        <img src="image/DownArrow.png"
+          style="margin-top: 212px; margin-left: 350px; height: 30px; width: 80px; transform: translateX(10px);">
+        <div id="output" class="AlgoBlock" data-title="Output"
+          data-text="The results of applying the process or the solution for the problem.\n<img src='image/output(1).png' style='width:100px; margin-top:10px; display:block; margin-left:auto; margin-right:auto;'>"
+          style="
+            bottom: 10px; left: 290px; 
+            width: 220px; height: 90px; 
+            border-radius: 5%; 
+            background-color: #b13ec5cd;
+            font-size:2.3rem;
+        "><span style="position: relative;">Output</span>
+          <img src="image/output.png" style="height: 80px; width: 80px; transform: translateX(10px);">
+        </div>
+      </div>
+
+      <div style="font-size: 1.2rem; margin: 60px;">
+        <h3>Algorithms in Computer Science vs. AI Algorithms:</h3>
+        <div style="display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; margin-top: 30px;">
+
+          <!-- Classical Algorithms Box -->
+          <div style="
+            flex: 1; 
+            min-width: 280px; 
+            max-width: 400px; 
+            background: #f1f1f1; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+          ">
+            <img src='image/CS_Algo.png'
+              style='width:400px; margin-top:10px; display:block; margin-left:auto; margin-right:auto;'>
+            <h3 style="color: #007acc;">Classical Algorithms</h3>
+            <p style="font-size: 1.1rem; line-height: 1.6;">
+              Traditional algorithms follow a strict set of well-defined instructions. They solve problems by applying
+              fixed, logical steps.
+              <br><br>
+              <b>Examples:</b> Calculating the cost, sorting numbers, searching in databases, finding the shortest path
+              in a network (Dijkstra's
+              algorithm).
+            </p>
+          </div>
+
+          <!-- AI Algorithms Box -->
+          <div style="
+            flex: 1; 
+            min-width: 280px; 
+            max-width: 400px; 
+            background: #f1f1f1; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+          ">
+            <img src='image/AI_Algo.png'
+              style='width:400px; margin-top:10px; display:block; margin-left:auto; margin-right:auto;'>
+            <h3 style="color: #00b894;">AI Algorithms</h3>
+            <p style="font-size: 1.1rem; line-height: 1.6;">
+              AI algorithms learn patterns from data. They adjust themselves over time, rather than following only
+              pre-set
+              instructions.
+              <br><br>
+              <b>Examples:</b> Machine Learning models recommending model, predicting house prices, Neural Networks
+              recognizing faces,
+              Reinforcement Learning for self-driving cars.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 38px; margin-left: 60px;">
+        <p style="font-size: 1.5rem;"><b>AI Algorithms:</b> </p>
+        <p style="font-size: 1.4rem; max-width: 800px;">Learn by themselves to produce better outputs or processes from
+          input data.<br><br> <span style="font-size: 1.1rem; color: #01ab26;">Have ability to learn to produce better
+            outputs or to improve their processes by themselves, adapting to the input data; whereas convertional
+            computing algorithms have a more rigid and deterministic input-output behavior.</span></p>
+      </div>
+    </section>
+
+    <br>
+    <hr style="border: none; width:70%; height: 2.5px; background-color: #ccc;">
+    <br>
+
+    <section style="font-size: 1.2rem; margin: 60px;">
+      <p style="text-align: center; font-size: 1.3rem;">AI system ≠ AI algorithm</p>
+      <p style="font-size: 1.5rem;"><b>AI system:</b> infrastructure and components needed to implement and deploy AI
+        algorithms in the real world.</p>
+      <p style="text-align: center;">Algorithm is a procedure or set of instructions to perform a task or reach a goal.
+      </p>
+      <p style="font-size: 1.3rem;">By contrast, an AI system encompasses the broader infrastructure and components
+        needed to implement and deploy our AI algorithm into the real world.<br><span style="margin-left: 150px;">This
+          includes elements like hardware and software, database and data storage, network infrastructure, and so
+          on...</span></p>
+
+      <!--AI System land map-->
+      <div class="AILandMap">
+        <p class="AISysBlock" style="font-size: 2.4rem; color: black; top:100px; left:0px;"><b>Input</b></p>
+        <img src="image/DownArrow.png"
+          style="margin-top: 212px; margin-top: 125px; margin-left: 110px; height: 100px; width: 100px; transform: rotate(-90deg);">
+        <img src="image/DownArrow.png"
+          style="margin-top: 212px; margin-top: 125px; margin-left: 315px; height: 100px; width: 100px; transform: rotate(-90deg);">
+        <div class="AISysBlock" style="
+            top:10px; left:130px;
+            width: 480px; height: 450px; 
+            border-radius: 5%; 
+            background-color: #fff93f67;
+            font-size: 2.0rem;
+            color: black;
+        "><span style="position: relative; top: -200px;"><b>AI system</b></span>
+        </div>
+        <div class="AISysBlock" style="
+            top: 280px; left: 150px; 
+            width: 120px; height: 50px; 
+            border-radius: 5%; 
+            background-color: #f8a814b6;
+            font-size: 1.5rem;
+        "><span style="position: relative;"><b>Hardware</b></span>
+        </div>
+        <div class="AISysBlock" style="
+            top: 100px; left: 210px; 
+            width: 320px; height: 150px; 
+            border-radius: 5%; 
+            background-color: #1b94f6b6;
+            font-size: 2.4rem;
+        "><span style="position: relative; top: -10px;"><b>AI Algorithm</b></span>
+        </div>
+        <div class="AISysBlock" style="
+            top: 260px; left: 480px; 
+            width: 120px; height: 50px; 
+            border-radius: 5%; 
+            background-color: #ff2828b6;
+            font-size:1.5rem;
+        "><span style="position: relative;"><b>Software</b></span>
+        </div>
+        <div class="AISysBlock" style="
+            top: 350px; left: 430px; 
+            width: 120px; height: 50px; 
+            border-radius: 5%; 
+            background-color: #69fd44b6;
+            font-size:1.5rem;
+        "><span style="position: relative;"><b>Database</b></span>
+        </div>
+        <div class="AISysBlock" style="
+            top: 380px; left: 230px; 
+            width: 140px; height: 50px; 
+            border-radius: 5%; 
+            background-color: #22b4d5b6;
+            font-size:1.5rem;
+        "><span style="position: relative;"><b>Networking</b></span>
+        </div>
+        <p class="AISysBlock" style="font-size: 3.8rem; color: black;  top:215px; left:340px;"><b>...</b></p>
+        <p class="AISysBlock" style="font-size: 2.3rem; color: black;  top:100px; right:-6px;"><b>Output</b></p>
+      </div>
+    </section>
+
+    <h2>Exmaple: <br>AI algorithm example for personalized hotel recommendations, the equivalent AI system would include
+      elements like customers, hotels, bookings, ratings database, the underlying data, network, hardware
+      infrastructures, etc.</h2>
+  </section>
+
+  <br><br>
+  <hr style="border: none; height: 2.5px; background-color: #ccc;">
+  <br>
+
+  <section style="font-size: 1.2rem; margin: 60px;">
+    <h2><b>Interrelationship between the areas of AI and the primary function of AI:</b></h2>
+
+    <div class="AIInterrealtionshipMap">
+      <!--AI Area block-->
+      <div class="AIAreaBlock" style="
+          top: 30px; left: 300px; 
+          width: 1000px; height: 400px; 
+          border-radius: 2%; 
+          background-color: #0c63c19b;
+          font-size: 2.4rem;
+      "><span style="position: relative; top: -155px; left: -390px;"><b>AI areas</b></span>
+      </div>
+      <div class="AIAreaBlock" style="
+          top: 150px; left: 1100px; 
+          width: 190px; height: 130px; 
+          border-radius: 2%; 
+          background-color: #ffa723;
+          font-size: 1.5rem;
+      "><span style="position: relative;"><b>Knowledge representation & reasoning</b></span>
+      </div>
+      <div class="AIAreaBlock" style="
+          top: 70px; left: 795px; 
+          width: 300px; height: 340px; 
+          border-radius: 2%; 
+          background-color: #44a9fbd3;
+          font-size: 2.1rem;
+      "><span style="position: relative; top: -115px; left: -60px;"><b>Machine Learning</b></span>
+      </div>
+      <div class="AIAreaBlock" style="
+          top: 193px; left: 860px; 
+          width: 220px; height: 200px; 
+          border-radius: 2%; 
+          background-color: #b13ec5b3;
+          font-size: 2.1rem;
+      "><span style="position: relative;"><b>Deep Learning</b></span>
+      </div>
+      <div class="AIAreaBlock" style="
+          top: 220px; left: 530px; 
+          width: 179px; height: 190px; 
+          border-radius: 2%; 
+          background-color: #e7bc4e;
+          font-size: 1.9rem;
+      "><span style="position: relative;"><b>Natural Language Processing</b></span>
+      </div>
+      <div class="AIAreaBlock" style="
+          top: 90px; left: 530px; 
+          width: 180px; height: 120px; 
+          border-radius: 2%; 
+          background-color: #388e3cd1;
+          font-size: 2.2rem;
+      "><span style="position: relative;"><b>Robotics</b></span>
+      </div>
+      <div class="AIAreaBlock" style="
+          top: 260px; left: 315px; 
+          width: 210px; height: 150px; 
+          border-radius: 2%; 
+          background-color: #333333;
+          font-size: 2.1rem;
+      "><span style="position: relative;"><b>Computer Vision</b></span>
+      </div>
+
+      <!--AI Function block-->
+      <div class="AIFuncBlock" data-title="AI functions"
+        data-text="Once get the data, AI systems and their underlying algorithms must learn or apply some reasoning with those data to yield output in the form of decisions, actions, or insights."
+        style="
+          top: 620px; left: 50px; 
+          width: 1150px; height: 200px; 
+          border-radius: 2%; 
+          background-color: #07e4bc81;
+          font-size: 2.4rem;
+      "><span style="position: relative; top: 70px; left: -20px;"><b>AI functions</b></span>
+      </div>
+      <div class="AIFuncBlock" data-title="Learn & Reason from Data"
+        data-text="Once data has been acquired almost every AI system nowadays relies on <b>Machine and Deep Learning</b> techniques.\n<img src='image/MLDL.png' style='width:400px; margin-top:10px; display:block; margin-left:auto; margin-right:auto;'>"
+        style="
+          top: 650px; left: 830px; 
+          width: 350px; height: 140px; 
+          border-radius: 2%; 
+          background-color: #52ff13b4;
+          font-size: 2.4rem;
+      "><span style="position: relative;"><b>Learn & reason from data</b></span>
+      </div>
+      <div class="AIFuncBlock" data-title="Aquire data"
+        data-text="The process where AI systems gather raw information from various sources (like sensors, databases, user input, or online data) to use for learning or decision-making.\nAI needs data to function — without data, AI cannot learn, reason, or act. Acquiring data is the first critical step, whether it's collecting images, text, sensor readings, or user behaviors.\nTypes of data acquisition:\n&nbsp;&nbsp;&nbsp;• Sensing the environment\n&nbsp;&nbsp;&nbsp;• Datasets"
+        style="
+          top: 650px; left: 70px; 
+          width: 350px; height: 140px; 
+          border-radius: 2%; 
+          background-color: #ef3131b4;
+          font-size: 2.4rem;
+      "><span style="position: relative;"><b>Aquire data</b></span>
+      </div>
+      <div class="AIFuncBlock" data-title="Interact with the environment"
+        data-text="The interaction between AI and the outside environment. Interacting with the physical or digital environment to some degree:\n&nbsp;&nbsp;&nbsp;• Computer Vision\n&nbsp;&nbsp;&nbsp;• Natural Language Processing(NLP)\n&nbsp;&nbsp;&nbsp;• Robotics\nThese types of AI system require interacting with physical environment to collect data inputs or perform actions based on learning and reasoning outputs."
+        style="
+          top: 500px; left: 380px; 
+          width: 500px; height: 100px; 
+          border-radius: 2%; 
+          background-color: #ad29ffb4;
+          font-size: 2.4rem;
+      "><span style="position: relative;"><b>Interact with the environment</b></span>
+      </div>
+      <img src="image/DownArrow.png"
+        style="position: absolute; margin-top: 520px; margin-left: 580px; height: 400px; width: 100px; transform: rotate(-90deg);">
+      <img src="image/DownArrow.png"
+        style="position: absolute; margin-top: 550px; margin-left: 200px; height: 100px; width: 100px;">
+      <img src="image/line.png"
+        style="position: absolute; margin-top: 480px; margin-left: 285px; height: 150px; width: 50px; transform: rotate(-90deg);">
+      <img src="image/line.png"
+        style="position: absolute; margin-top: 480px; margin-left: 925px; height: 150px; width: 50px; transform: rotate(-90deg);">
+      <img src="image/line.png"
+        style="position: absolute; margin-top: 544px; margin-left: 990px; height: 106px; width: 50px;">
+      <img src="image/brace.png"
+        style="position: absolute; margin-top: 300px; margin-left: 290px; height: 250px; width: 450px;">
+      <img src="image/brace.png"
+        style="position: absolute; margin-top: 260px; margin-left: 780px; height: 340px; width: 530px;">
+
+    </div>
+  </section>
+
+  <br>
+  <hr style="border: none; width:70%; height: 2.5px; background-color: #ccc;">
+  <br>
+
+  <br><br>
+
+  <section style="font-size: 1.2rem; margin: 60px;">
+    <h2><b>Acquiring Data:</b></h2>
+    <p style="margin-left: 60px; font-size: 1.3rem;"><b style="font-size: 1.4rem;">"Data" is the fuel that makes AI
+        work.</b> Different ways AI systems can acquire data.<br><br>Depending on the type of AI system, there are
+      different approaches to data acquisition:</p>
+
+    <ul style=" margin: 30px; margin-left: 80px;">
+      <li><b>Sensing the Environment:</b></li><br>Collect outside sensory information through sensors: <b><u>mimic human
+          sensors</u></b>.
+      <ul style="list-style-type:none;">
+        <li>Transform perceptions into <b>data</b>.</li>
+        <li>The perception of <u>smell</u> or <u>taste</u> by AI is still not too explored, but the rest of the senses
+          are already commonly used.</li>
+        <br>
+        <li>Occurs in:</li>
+        <ul>
+          <li><b>NLP and audio:</b> captruing speech, sounds</li>
+          <li><b>Computer Vision:</b> satellite images, fingerprint, etc.</li>
+          <li><b>Robotics and sensors:</b> temperature, touch, motion, gravity, etc. (e.g. Internet of Things(IT))</li>
+        </ul>
+      </ul>
+      <br>
+      <li><b>Datasets:</b></li><br>In general, AI systems deal with sets of input data called: <b><u>datasets</u></b>.
+      <ul style="list-style-type:none;">
+        <ul style="list-style-type:none;">
+          <li>Dataset collection of data: data samples or instances of a given type of data</li>
+        </ul>
+      </ul>
+      <br>
+      <ul>
+        <li><b>Structured:</b> tabular format, spreadsheets (e.g. Excel files)</li>
+        <li><b>Unstructured:</b> images, audio, videos, text, ...etc.</li>
+      </ul>
+
+      <br>
+
+      <div class="AILandMap" style="width: 900px; background-color: #ebebeb; border: 4px solid #ccc;">
+        <div class="AIFuncBlock" data-title="Dataset"
+          data-text="A collection of related data organized for analysis or training.\nIn AI, datasets provide the examples that algorithms learn from. They can include text, images, numbers, or audio, depending on the task.              "
+          style="
+              top: 150px; left: 630px; 
+              width: 240px; height: 180px; 
+              border-radius: 5%; 
+              background-color: #05ab05bf;
+              font-size: 2.5rem;
+              border-color: black;
+              border-width: 7px;
+          "><span style="position: relative;"><b>Dataset</b></span>
+          <img src="icons/dataset.png" style="height: 80px; width: 80px;">
+        </div>
+        <div class="AIFuncBlock" data-title="Manually created"
+          data-text="Depending on the nature of the data and the problem to address, datasets might be manually created by a human.\nThis is typically the case for smaller tabular datasets such as certain database tables."
+          style="
+              top: 20px; left: 40px; 
+              width: 275px; height: 110px; 
+              border-radius: 5%; 
+              background-color: #cc13ffb4;
+              font-size: 1.8rem;
+              border-color: black;
+              border-width: 7px;
+          "><span style="position: relative;"><b>Manually created</b></span>
+          <img src="icons/manually_created.png" style="height: 70px; width: 70px;">
+        </div>
+        <div class="AIFuncBlock" data-title="Automatically collected"
+          data-text="However, a vast majority of AI applications nowadays rely on datasets built automatically.\n\nFor example, in an e-commerce portal, every customer purchase of product triggers the creation of new data instances in customer and product-related datasets."
+          style="
+              top: 180px; left: 40px; 
+              width: 275px; height: 110px;  
+              border-radius: 5%; 
+              background-color: #cc13ffb4;
+              font-size: 1.8rem;
+              border-color: black;
+              border-width: 7px;
+          "><span style="position: relative;"><b>Automatically collected</b></span>
+          <img src="icons/automatically_collected.png" style="height: 70px; width: 70px;">
+        </div>
+        <div class="AIFuncBlock" data-title="Sensing the environment"
+          data-text="Another way to creates datasets, normally as a particular case of automatically collected data."
+          style="
+              top: 340px; left: 40px; 
+              width: 275px; height: 110px; 
+              border-radius: 2%; 
+              background-color: #cc13ffb4;
+              font-size: 1.8rem;
+              border-color: black;
+              border-width: 7px;
+          "><span style="position: relative;"><b>Sensing the environment</b></span>
+          <img src="icons/Sensing_environment.png" style="height: 70px; width: 70px;">
+        </div>
+        <img src="image/DownArrow.png"
+          style="position: absolute; margin-top: 70px; margin-left: 449px; height: 334px; width: 50px; transform: rotate(-90deg);">
+        <img src="image/DownArrow.png"
+          style="position: absolute; margin-top: 70px; margin-left: 500px; height: 220px; width: 50px; transform: rotate(-90deg);">
+        <img src="image/DownArrow.png"
+          style="position: absolute; margin-top: 180px; margin-left: 500px; height: 220px; width: 50px; transform: rotate(-90deg);">
+        <img src="image/line.png"
+          style="position: absolute; margin-top: 347.5px; margin-left: 350px; height: 105px; width: 28px; transform: rotate(-90deg);">
+        <img src="image/line.png"
+          style="position: absolute; margin-top: 17.3px; margin-left: 350px; height: 105px; width: 28px; transform: rotate(-90deg);">
+        <img src="image/line.png"
+          style="position: absolute; margin-top: 282px; margin-left: 408px; height: 125px; width: 28px;">
+        <img src="image/line.png"
+          style="position: absolute; margin-top: 63px; margin-left: 408px; height: 125px; width: 28px;">
+      </div>
+    </ul>
+  </section>
+
+  <br>
+  <hr style="border: none; width:70%; height: 2.5px; background-color: #ccc;">
+  <br>
+
+  <section style="font-size: 1.2rem; margin: 60px;">
+    <h2><b>Learn & reason from data:</b></h2>
+    <p style="margin-left: 60px; font-size: 1.3rem;"><span style="font-size: 1.4rem;">Once data has been acquired,
+        almost every AI system nowadays relies on <b>Machine Learning</b> and <b>Deep Learning</b> techniques.</span>
+    </p>
+
+    <ul style=" margin: 30px; margin-left: 80px;">
+      <li><b>Machine Learning:</b> learn from data and identify patterns.</li>
+      <ul>
+        <li><b>Supervised Learning:</b> for predictive tasks</li>
+        <ul>
+          <li><b>classification:</b> assign each data observation the category(class) it may belong to.</li>
+          <ul>
+            <li>Binary classification: two classes, e.g. postitive/negative, male/female, etc.</li>
+            <li>Multi-class classification: several mutually exclusive class, e.g. multiple species</li>
+          </ul>
+          <li><b>regression and forecasting</b></li>
+          <ul>
+            <li>Regression: assign each data observation a numerical output or label based on its inputs.</li>
+            <li>Time series forecasting: predict future values of variable, base on its past behavior</li>
+          </ul>
+        </ul>
+        <br>
+        <li><b>Unsupervised Learning:</b> specializes in other pattern recognition tasks</li>
+        <ul>
+          <li><b>Clustering:</b> find subgroups oof data with similar characteristics (e.g. K-means algorithm)</li>
+          <li><b>Anomaly detection:</b> detecting abnormal data observations (e.g. unusual card transactions)</li>
+          <li><b>Association rule discovery:</b> find common co-occurrences of items in transaction data (e.g. a popular
+            problem in retail to find items that are frequently bought together)</li>
+        </ul>
+        <br>
+        <li><b>Reinforcement Learning:</b> investigates agents that learn by themselves from past experiences to master
+          a complex task (e.g., like navigating a maze or playing videogrames by trial and error)</li>
+      </ul>
+      <br>
+      <li><b>Deep Learning:</b> use so-called neural networks to solve much more complex variants of all of those ML
+        problems.</li>
+      <ul>
+        <li>Highly sophisciated models based on deep neural networkL solve very challenging tasks where classical ML
+          models become limited.</li>
+        <li>Learn form data as a human brain would do.</li>
+        <ul style="list-style-type:none;">
+          <li>Deep learning models look for <b>patterns</b> in pictures, text, sounds, and other data by using so-called
+            <b>deep neural networks</b>.
+          </li>
+          <li>There powerful models require huge amounts of data to be trained.</li>
+        </ul>
+      </ul>
+    </ul>
+  </section>
+
+  <br>
+  <hr style="border: none; width:70%; height: 2.5px; background-color: #ccc;">
+  <br>
+
+  <section style="font-size: 1.2rem; margin: 60px;">
+    <h2><b>Interacting with the Environment:</b></h2>
+    <p style="margin-left: 60px; font-size: 1.3rem;"><span style="font-size: 1.4rem;">Interacting with the physical or
+        digital environment to some degree.</span></p>
+
+    <ul style=" margin: 30px; margin-left: 80px;">
+      <li><b>Computer Vision:</b> </li>
+      <ul>
+        <li><b>Image processing:</b> intelligently enhance images and video</li>
+        <li><b>Object detection:</b> identify subjects in images/videos for surveillance, logistics, etc.</li>
+        <li><b>Motion analysis:</b> extract motion information like speed and direction of objects</li>
+        <li><b>Image and video generation:</b> create realistic visual data from human text</li>
+      </ul>
+      <br>
+      <li><b>Natural Language Processing(NLP):</b> </li>
+      <ul>
+        <li><b>Text-based:</b></li>
+        <ul>
+          <li>Text classification</li>
+          <li>Sentiment analysis: extract positive and negative feelings in text, e.g., customer reviews</li>
+          <li>Question answering(e.g. chatbots)</li>
+          <li>Text summarization</li>
+        </ul>
+        <li><b>Speech-based:</b></li>
+        <ul>
+          <li>Text-to-speech</li>
+          <li>Speech-to-text</li>
+        </ul>
+      </ul>
+      <br>
+      <li><b>Robotics:</b> </li>
+      <ul>
+        <li>Combine computer vision and NLP</li>
+        <ul style="list-style-type:none;">
+          <li>Robots combine computer vision and NLP in a wide number of applications.</li>
+          <br>
+          <li>Usually, robots can be divided into the following areas:</li>
+          <ul>
+            <li><b>Sensing and perception:</b> collecting data or perceiving signals</li>
+            <li><b>Mobility:</b> moving in the environment guided by perceptions of surroundings</li>
+            <li><b>Manipulation:</b> the robot modifies its environment</li>
+            <li><b>Huamn-robot interaction(humanoid robots):</b> e.g. converational robots endowed with NLP</li>
+          </ul>
+        </ul>
+      </ul>
+    </ul>
+
+  </section>
+
+  <br><br>
+
+  <div class="backButton" style="text-align: center; margin-top: 2rem;">
+    <a class="button-link" href="index.html">Back to Main Page</a>
+  </div>
+
+  <br><br><br>
+
+
+  <!--subwindow for description of each applications-->
+  <div id="tooltip" style="
+    position: fixed;
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    pointer-events: none;
+    display: none;
+    z-index: 1001;
+    white-space: pre-wrap;
+    max-width: 350px;
+    ">
+  </div>
+  <!--Popup window of Algorithm land map-->
+  <div class="popup" id="popupBox">
+    <div class="popup-title" id="popupTitle"></div>
+    <div class="popup-text" id="popupText"></div>
+  </div>
+
+</body>
+
+
+<script>
+  // Menu bar
+  const menu = document.querySelector('.menu');
+  const menuButton = document.getElementById('menuButton');
+  const menuContent = document.getElementById('menuContent');
+
+  menuButton.addEventListener('click', () => {
+    if (menu.classList.contains('open')) {
+      // When closing: play bounce-up animation
+      menuContent.style.animation = 'menuSlideBounceUp 0.5s ease forwards';
+      setTimeout(() => {
+        menu.classList.remove('open');
+        menuContent.style.animation = ''; // Reset after animation
+      }, 500); // Match the animation duration
+    } else {
+      menu.classList.add('open');
+      menuContent.style.animation = 'menuSlideBounce 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6)';
+    }
+  });
+
+  // subwindow for description of each applications
+  const tooltip = document.getElementById('tooltip');
+
+  // Things AI can do:
+  const AICanDo = document.querySelectorAll('#AICanDo li');
+
+  AICanDo.forEach(item => {
+    item.addEventListener('mouseenter', (e) => {
+      const desc = item.getAttribute('data-desc').replace(/\\n/g, '<br>');
+      tooltip.innerHTML = desc;
+      tooltip.style.display = 'block';
+      item.style.color = "blue";         // when user is finding describing for the word change color and bold
+      item.style.fontWeight = "bolder";
+      item.style.cursor = "pointer";     // change hover to pointer when point to the word
+    });
+
+    item.addEventListener('mousemove', (e) => {
+      tooltip.style.top = (e.clientY + 15) + 'px';
+      tooltip.style.left = (e.clientX + 15) + 'px';
+    });
+
+    item.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+      item.style.color = "#0061a7";
+      item.style.fontWeight = "normal";     // when user is leaving word return to normal
+    });
+  });
+
+  // Things AI can do:
+  const AICantDo = document.querySelectorAll('#AICantDo li');
+
+  AICantDo.forEach(item => {
+    item.addEventListener('mouseenter', (e) => {
+      const desc = item.getAttribute('data-desc').replace(/\\n/g, '<br>');
+      tooltip.innerHTML = desc;
+      tooltip.style.display = 'block';
+      item.style.color = "blue";         // when user is finding describing for the word change color and bold
+      item.style.fontWeight = "bolder";
+      item.style.cursor = "pointer";     // change hover to pointer when point to the word
+    });
+
+    item.addEventListener('mousemove', (e) => {
+      tooltip.style.top = (e.clientY + 15) + 'px';
+      tooltip.style.left = (e.clientX + 15) + 'px';
+    });
+
+    item.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+      item.style.color = "#0061a7";
+      item.style.fontWeight = "normal";     // when user is leaving word return to normal
+    });
+  });
+
+  // popup setuo
+  const popup = document.getElementById('popupBox');
+  const titleEl = document.getElementById('popupTitle');
+  const textEl = document.getElementById('popupText');
+
+
+  // Algorithms land map
+  const AlgoBlocks = document.querySelectorAll('.AlgoBlock');
+
+  AlgoBlocks.forEach(square => {
+    square.addEventListener('mouseenter', () => {
+      const title = square.getAttribute('data-title');
+      const text = square.getAttribute('data-text').replace(/\\n/g, '<br>');
+
+      titleEl.textContent = title;
+      textEl.innerHTML = text;
+      popup.style.display = 'block';
+    });
+
+    square.addEventListener('mouseleave', () => {
+      popup.style.display = 'none';
+    });
+  });
+
+  // Algorithms land map
+  const AIFuncBlocks = document.querySelectorAll('.AIFuncBlock');
+
+  AIFuncBlocks.forEach(square => {
+    square.addEventListener('mouseenter', () => {
+      const title = square.getAttribute('data-title');
+      const text = square.getAttribute('data-text').replace(/\\n/g, '<br>');
+
+      titleEl.textContent = title;
+      textEl.innerHTML = text;
+      popup.style.display = 'block';
+    });
+
+    square.addEventListener('mouseleave', () => {
+      popup.style.display = 'none';
+    });
+  });
+
+</script>
+
+</html>
