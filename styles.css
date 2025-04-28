@@ -350,7 +350,7 @@ header {
 /* The tooltip (popup) in top-right corner of the .container */
 .popup {
   position: absolute;
-  top: 80px;
+  top: 100px;
   right: 20px;
   width: 300px;
   background-color: #ffffff;
