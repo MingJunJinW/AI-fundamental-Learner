@@ -762,7 +762,7 @@
     <!-- BUILDING BLOCKS OF LLMs -->
     <section style="margin: 60px;">
         <h2 style="text-align: center;">Building Blocks of LLMs</h2>
-        <div id="llmBlocks"
+        <div id="llmBlocks" class="inv"
             style="display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; margin-top: 40px;">
             <!-- JS will generate blocks here -->
         </div>
@@ -1117,6 +1117,19 @@
         white-space: pre-wrap;
     "></div>
 
+    <!--Hover investigate-->
+    <div id="hoverInvestigate" style="
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        display: none;
+        pointer-events: none;
+        z-index: 999;
+    "> Investigate
+    </div>
 
     <script>
         // Menu bar
@@ -1160,6 +1173,26 @@
             });
         });
 
+        // Hover Tip
+        const hoverInvestigate = document.getElementById('hoverInvestigate');
+        const invTip = document.querySelectorAll('.inv');
+
+        invTip.forEach((e) => {
+            e.addEventListener('mouseenter', (a) => {
+                // Show hover tip
+                hoverInvestigate.style.display = 'block';
+            });
+            e.addEventListener('mousemove', (a) => {
+                // Follow cursor
+                hoverInvestigate.style.left = (a.pageX + 15) + 'px';
+                hoverInvestigate.style.top = (a.pageY + 15) + 'px';
+            });
+            // Hide popup on mouseleave
+            e.addEventListener('mouseleave', () => {
+                hoverInvestigate.style.display = 'none';
+            });
+        });
+        
         /////////////////////////////
 
         const tooltip = document.getElementById('tooltip');
